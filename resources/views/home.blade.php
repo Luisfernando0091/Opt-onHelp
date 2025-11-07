@@ -11,7 +11,7 @@
           <div class="col-lg-12">
             <div class="card card-rounded">
               <div class="card-body">
-                <h4 class="card-title">sexo</h4>
+                <h4 class="card-title"></h4>
                 <p class="card-description">Bienvenido al sistema OpcionHelp</p>
                 <div class="row grow">
                   <div class="col-12 grid-margin stretch-card">

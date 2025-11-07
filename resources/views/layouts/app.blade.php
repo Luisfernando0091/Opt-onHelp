@@ -173,7 +173,7 @@
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link" href="{{ route('home') }}">
             <i class="mdi mdi-grid-large menu-icon"></i>
             <span class="menu-title">Dashboard</span>
           </a>
@@ -211,19 +211,20 @@
             <i class="mdi mdi-chevron-right menu-arrow"></i>
           </a>
 
-          <div class="collapse" id="menu-ticket" >
-            <ul class="nav flex-column sub-menu ps-4">
-              <li class="nav-item">
-                <a class="nav-link" href="#" >Incidente</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link"  href="#">Requerimiento</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Typography</a>
-              </li>
-            </ul>
-          </div>
+       <div class="collapse" id="menu-ticket">
+  <ul class="nav flex-column sub-menu ps-4">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('incidentes.index') }}">Incidente</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Requerimiento</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Typography</a>
+    </li>
+  </ul>
+</div>
+
         </li>
       </ul>
     </nav>
