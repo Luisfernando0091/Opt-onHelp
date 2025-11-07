@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-scroller">
-  <div class="main-panel">
-    <div class="content-wrapper">
-      <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-          <div class="card">
-            <div class="card-body">
+
+  
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card card-rounded">
+              <div class="card-body">
               <h4 class="card-title">Lista de Usuarios</h4>
               <p class="card-description">Usuarios registrados en el sistema</p>
 
@@ -50,19 +51,11 @@
               </div>
 
             </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="d-sm-flex justify-content-center justify-content-sm-between">
-        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-          © {{ date('Y') }} OpcionHelp. Todos los derechos reservados Area TI.
-        </span>
-      </div>
-    </footer>
-  </div>
-</div>
+
+
 @endsection
