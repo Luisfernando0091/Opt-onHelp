@@ -10,9 +10,14 @@ Route::get('/', fn() => redirect()->route('login'));
 Auth::routes();
 
 // Solo accesible por admin
+// Route::middleware(['auth', 'role:admin'])->group(function () {
+//     Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+// });
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+    Route::resource('usuarios', UserController::class);
 });
+
+
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

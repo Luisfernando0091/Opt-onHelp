@@ -1,3 +1,4 @@
+
 <table class="table table-hover table-bordered align-middle">
   <thead class="table-light">
     <tr>
@@ -58,3 +59,12 @@
     @endforelse
   </tbody>
 </table>
+
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

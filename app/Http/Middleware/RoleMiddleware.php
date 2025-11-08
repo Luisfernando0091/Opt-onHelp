@@ -1,23 +1,23 @@
-<?php
 
-namespace App\Http\Middleware;
+<!-- 
+// namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+// use Closure;
+// use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\Auth;
 
-class RoleMiddleware
-{
-    public function handle(Request $request, Closure $next, $role)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+// class RoleMiddleware
+// {
+//     public function handle(Request $request, Closure $next, $role)
+//     {
+//         if (!Auth::check()) {
+//             return redirect()->route('login');
+//         }
 
-        if (Auth::user()->role !== $role) {
-            abort(403, 'Acceso denegado. No tienes permisos para esta sección.');
-        }
+//         if (Auth::user()->role !== $role) {
+//             abort(403, 'Acceso denegado. No tienes permisos para esta sección.');
+//         }
 
-        return $next($request);
-    }
-}
+//         return $next($request);
+//     }
+// } -->

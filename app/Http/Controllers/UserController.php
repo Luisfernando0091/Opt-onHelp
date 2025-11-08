@@ -22,7 +22,7 @@ class UserController extends Controller
    public function index()
 {
     // Cargamos la relación correcta (roleData)
-    $usuarios = \App\Models\User::with('roleData')->get();
+    $usuarios = \App\Models\User::with('roles')->get();
 
     return view('list.Listuser', compact('usuarios'));
 }
@@ -34,7 +34,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('usuarios.create', compact('roles'));
+        return view('auth.register', compact('roles'));
     }
 
     /**
@@ -44,6 +44,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
+            'LastName' => 'required|string|max:100',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'role' => 'required'
@@ -51,6 +52,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $validated['name'],
+            'LastName' => $validated['LastName'], // ✅ nuevo campo
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
         ]);

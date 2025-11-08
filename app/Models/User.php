@@ -1,23 +1,26 @@
 <?php
 
 namespace App\Models;
-use Laravel\Sanctum\HasApiTokens; // ✅ ahora sí existirá
 
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Role;
+
+// 👇 Importante para usar Spatie Roles
+use Spatie\Permission\Traits\HasRoles;
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'name',
+        'LastName',   // ✅ tu nuevo campo
         'email',
         'password',
-        'role',   // 👈 Agregamos el campo de rol (admin, tecnico, usuario)
-        'phone',  // 👈 Si quieres guardar teléfono
+        'phone',      // opcional si existe
     ];
 
     protected $hidden = [
@@ -29,8 +32,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // 🔗 Relaciones con otros modelos
-
+    // 🔗 Relaciones personalizadas (no cambian)
     public function incidentesReportados()
     {
         return $this->hasMany(Incidente::class, 'usuario_id');
@@ -50,9 +52,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Archivo::class);
     }
-public function roleData()
-{
-    return $this->belongsTo(Role::class, 'role', 'id');
-}
-
 }

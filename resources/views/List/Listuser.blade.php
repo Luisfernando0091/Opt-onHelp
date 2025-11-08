@@ -9,6 +9,9 @@
           <div class="col-lg-12">
             <div class="card card-rounded">
               <div class="card-body">
+                            <h4 class="card-title mb-3">Registrar nuevo incidente</h4>
+                               <form method="POST" action="{{ route('incidentes.store') }}">
+                @csrf
               <h4 class="card-title">Lista de Usuarios</h4>
               <p class="card-description">Usuarios registrados en el sistema</p>
 

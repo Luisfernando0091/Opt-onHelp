@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
+
 @section('content')
-<div class="container-fluid page-body-wrapper">
+{{-- <div class="container-fluid page-body-wrapper"> --}}
   <div class="main-panel">
     <div class="content-wrapper">
-      <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="row">
+          <div class="col-lg-12">
           <div class="card card-rounded">
             <div class="card-body">
               <h4 class="card-title mb-3">Registrar nuevo incidente</h4>
@@ -18,6 +19,7 @@
                     <label class="form-label">Código</label>
                     <input type="text" name="codigo" class="form-control" required>
                   </div>
+                  
 
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Título</label>
@@ -65,5 +67,7 @@
       </div>
     </div>
   </div>
+{{-- </div> --}}
+ </div>
 </div>
 @endsection
