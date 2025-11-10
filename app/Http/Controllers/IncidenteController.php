@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Incidente;
+use App\Models\BssCinc; // 👈 importante: importa el modelo
+use App\Models\User;
 
 class IncidenteController extends Controller
 {
@@ -27,45 +29,62 @@ class IncidenteController extends Controller
     /**
      * 🔹 Mostrar formulario para crear incidente
      */
-    public function create()
-    {
-        return view('incidentes.create');
-    }
+   public function create()
+{
+    $tiposIncidentes = BssCinc::all();
 
-    /**
+    // ✅ Solo usuarios con el rol "tecnico"
+    $tecnicos = User::role('tecnico')
+        ->where('activo', 1)
+        ->get();
+
+    // Generar el nuevo código del ticket
+    $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->first();
+    $nuevoCodigo = 'INC-' . str_pad(($ultimo ? $ultimo->id + 1 : 1), 4, '0', STR_PAD_LEFT);
+
+    return view('incidentes.create', compact('tiposIncidentes', 'tecnicos', 'nuevoCodigo'));
+}
+
+
+        /**
      * 🔹 Guardar nuevo incidente
      */
     public function store(Request $request)
     {
-        // ✅ Validar entrada (sin 'codigo' ni 'usuario_id', se generan automáticamente)
         $validated = $request->validate([
-            'titulo' => 'required|string|max:255',
+            'codigo' => 'required|exists:bss_cinc,CODIGO',
             'descripcion' => 'nullable|string',
-            'prioridad' => 'required|in:Baja,Media,Alta,Crítica',
-            'tecnico_id' => 'nullable|exists:users,id',
+            'prioridad' => 'required|in:Alta,Media,Baja',
+            'fecha_reporte' => 'required|date',
+            'tecnico_id' => 'nullable|exists:users,id', // 👈 nuevo
+
         ]);
 
-        // ✅ Generar código automático (INC-0001, INC-0002, etc.)
-        $ultimo = Incidente::orderBy('id', 'desc')->first();
+        // 1️⃣ Buscar el tipo de incidente seleccionado (A-01, etc.)
+        $tipo = BssCinc::where('CODIGO', $validated['codigo'])->first();
+
+        // 2️⃣ Generar código único para el nuevo incidente (ej. INC-0001)
+        $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->first();
         $nuevoCodigo = 'INC-' . str_pad(($ultimo ? $ultimo->id + 1 : 1), 4, '0', STR_PAD_LEFT);
 
-        // ✅ Crear incidente
-        Incidente::create([
-            'codigo' => $nuevoCodigo,
-            'titulo' => $validated['titulo'],
+        // 3️⃣ Crear el incidente
+        $incidente = Incidente::create([
+            'codigo' => $nuevoCodigo, // 👈 Código único del ticket
+            'titulo' => $tipo->nombre_caso, // 👈 Nombre del tipo de incidente
             'descripcion' => $validated['descripcion'] ?? '',
-            'estado' => 'Pendiente', // 👈 compatible con tu ENUM
+            'estado' => 'Pendiente',
             'prioridad' => $validated['prioridad'],
-            'usuario_id' => auth()->id(), // usuario autenticado
-            'tecnico_id' => $validated['tecnico_id'] ?? null,
-            'fecha_reporte' => now(),
+            'usuario_id' => auth()->id(),
+            'tecnico_id' => $request->input('tecnico_id'), // ✅ se guarda el técnico asignado
+            'fecha_reporte' => $validated['fecha_reporte'],
             'solucion' => null,
         ]);
 
         return redirect()
             ->route('incidentes.index')
-            ->with('success', '✅ Incidente creado correctamente.');
+            ->with('success', '✅ Incidente registrado correctamente.');
     }
+
 
     /**
      * 🔹 Mostrar un incidente

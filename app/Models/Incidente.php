@@ -39,5 +39,9 @@ class Incidente extends Model
             return $this->hasMany(Archivo::class );
         }
 
+        public function tipoIncidente()
+    {
+        return $this->belongsTo(\App\Models\BssCinc::class, 'codigo_incidente', 'CODIGO');
+    }
 
 }
