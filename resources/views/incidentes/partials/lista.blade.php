@@ -53,7 +53,7 @@
     @empty
     <tr>
       <td colspan="11" class="text-center text-muted py-3">
-        No hay incidentes registrados.
+        No hay incidentes registrados "NO  SE PODRA DESCARGAR INFORMACION ".
       </td>
     </tr>
     @endforelse

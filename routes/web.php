@@ -15,6 +15,7 @@ Auth::routes();
 // });
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('usuarios', UserController::class);
+    
 });
 
 
@@ -22,3 +23,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::resource('incidentes', IncidenteController::class);
+//EXPORTAR
+
+Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPDF'])
+    ->name('incidentes.export.pdf');
+
+Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])
+    ->name('incidentes.export.excel');
+
+
+
+Route::get('/reportes/incidentes', [App\Http\Controllers\IncidenteController::class, 'reporte'])
+     ->name('reportes.incidentes');
+
+Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPdf'])->name('incidentes.export.pdf');
+Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])->name('incidentes.export.excel');
+Route::get('/reportes/incidentes', [IncidenteController::class, 'reporte'])->name('reportes.incidentes');

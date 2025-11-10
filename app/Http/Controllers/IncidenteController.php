@@ -6,25 +6,52 @@ use Illuminate\Http\Request;
 use App\Models\Incidente;
 use App\Models\BssCinc; // 👈 importante: importa el modelo
 use App\Models\User;
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\IncidentesExport; // la
 class IncidenteController extends Controller
 {
     /**
      * 🔹 Mostrar lista de incidentes
      */
-    public function index(Request $request)
-    {
+ public function index(Request $request)
+{
+    $user = auth()->user();
+
+    // 🔹 Filtramos los incidentes según el rol del usuario
+    if ($user->hasRole('admin')) {
+        // El admin ve todos los tickets
         $incidentes = Incidente::with(['usuario', 'tecnico'])
             ->orderByDesc('id')
             ->get();
 
-        // Si la petición es AJAX (para recargar tabla)
-        if ($request->ajax()) {
-            return view('incidentes.partials.lista', compact('incidentes'))->render();
-        }
+    } elseif ($user->hasRole('tecnico')) {
+        // El técnico solo ve los tickets asignados a él
+        $incidentes = Incidente::with(['usuario', 'tecnico'])
+            ->where('tecnico_id', $user->id)
+            ->orderByDesc('id')
+            ->get();
 
-        return view('incidentes.index', compact('incidentes'));
+    } elseif ($user->hasRole('usuario')) {
+        // El usuario solo ve los tickets que él mismo creó
+        $incidentes = Incidente::with(['usuario', 'tecnico'])
+            ->where('usuario_id', $user->id)
+            ->orderByDesc('id')
+            ->get();
+
+    } else {
+        // Por si acaso, si no tiene rol asignado
+        $incidentes = collect(); // devuelve una colección vacía
     }
+
+    // Si es una petición AJAX (para actualizar la tabla)
+    if ($request->ajax()) {
+        return view('incidentes.partials.lista', compact('incidentes'))->render();
+    }
+
+    return view('incidentes.index', compact('incidentes'));
+}
+
 
     /**
      * 🔹 Mostrar formulario para crear incidente
@@ -144,4 +171,88 @@ class IncidenteController extends Controller
             ->route('incidentes.index')
             ->with('success', '🗑️ Incidente eliminado correctamente.');
     }
+
+// ...
+
+// ...
+
+public function exportPdf(Request $request)
+{
+    $query = Incidente::with(['usuario', 'tecnico']);
+
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
+    }
+
+    if ($request->filled('fecha_hasta')) {
+        $query->whereDate('fecha_reporte', '<=', $request->fecha_hasta);
+    }
+
+    if ($request->filled('mes')) {
+        $query->whereMonth('fecha_reporte', $request->mes);
+    }
+
+    $incidentes = $query->orderBy('fecha_reporte', 'desc')->get();
+
+    if ($incidentes->isEmpty()) {
+        return back()->with('warning', '⚠️ No hay incidentes para exportar con los filtros seleccionados.');
+    }
+
+    // Cargar tu vista PDF
+$pdf = Pdf::loadView('incidentes.export_pdf', compact('incidentes'))
+        ->setPaper('a4', 'landscape'); // horizontal
+
+    // Descargar el archivo
+    return $pdf->download('reporte_incidentes.pdf');
+}
+
+
+public function exportExcel(Request $request)
+{
+    $query = Incidente::with(['usuario', 'tecnico']);
+
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
+    }
+
+    if ($request->filled('fecha_hasta')) {
+        $query->whereDate('fecha_reporte', '<=', $request->fecha_hasta);
+    }
+
+    if ($request->filled('mes')) {
+        $query->whereMonth('fecha_reporte', $request->mes);
+    }
+
+    $incidentes = $query->orderBy('fecha_reporte', 'desc')->get();
+
+    if ($incidentes->isEmpty()) {
+        return back()->with('warning', '⚠️ No hay incidentes para exportar con los filtros seleccionados.');
+    }
+
+    return Excel::download(new \App\Exports\IncidentesExport($incidentes), 'reporte_incidentes.xlsx');
+}
+
+public function reporte(Request $request)
+{
+    $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
+    }
+
+    if ($request->filled('fecha_hasta')) {
+        $query->whereDate('fecha_reporte', '<=', $request->fecha_hasta);
+    }
+
+    if ($request->filled('mes')) {
+        $query->whereMonth('fecha_reporte', $request->mes);
+    }
+
+    $incidentes = $query->orderBy('fecha_reporte', 'desc')->get();
+
+    return view('reports.report', compact('incidentes'));
+}
+
+
+
 }

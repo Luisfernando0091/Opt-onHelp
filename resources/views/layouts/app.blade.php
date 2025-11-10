@@ -189,8 +189,9 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <a class="nav-link" href="{{ route('reportes.incidentes') }}">
             <i class="menu-icon mdi mdi-file-document"></i>
+            {{-- <a href="{{ route('reportes.incidentes') }}" class="btn btn-outline-primary"></a> --}}
             <span class="menu-title">Reportes</span>
           </a>
         </li>
