@@ -27,7 +27,9 @@ class IncidentesExport implements FromCollection, WithHeadings
                 'Prioridad' => $i->prioridad,
                 'Usuario' => $i->usuario->name ?? '—',
                 'Técnico' => $i->tecnico->name ?? '—',
-                'Fecha Reporte' => optional($i->fecha_reporte)->format('d/m/Y'),
+                'Fecha Reporte' => $i->fecha_reporte
+                    ? \Carbon\Carbon::parse($i->fecha_reporte)->format('d/m/Y')
+                    : '',
             ];
         });
     }

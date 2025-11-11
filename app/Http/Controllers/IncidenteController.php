@@ -69,8 +69,8 @@ class IncidenteController extends Controller
         ->get();
 
     // Generar el nuevo código del ticket
-    $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->first();
-    $nuevoCodigo = 'INC-' . str_pad(($ultimo ? $ultimo->id + 1 : 1), 4, '0', STR_PAD_LEFT);
+    $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->count();
+    $nuevoCodigo = 'INC-' . str_pad(($ultimo), 4, '0', STR_PAD_LEFT);
 
     return view('incidentes.create', compact('tiposIncidentes', 'tecnicos', 'nuevoCodigo'));
 }
@@ -79,50 +79,53 @@ class IncidenteController extends Controller
         /**
      * 🔹 Guardar nuevo incidente
      */
-public function store(Request $request)
-{
-    $request->validate([
-        'codigo' => 'required|exists:bss_cinc,CODIGO',
-        'descripcion' => 'required|string',
-        'prioridad' => 'required|in:Alta,Media,Baja',
-        'tecnico_id' => 'required|exists:users,id',
-        'fecha_reporte' => 'required|date',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'codigo' => 'required|exists:bss_cinc,CODIGO',
+            'descripcion' => 'required|string',
+            'prioridad' => 'required|in:Alta,Media,Baja',
+            'tecnico_id' => 'required|exists:users,id',
+            'fecha_reporte' => 'required|date',
+        ]);
 
-    // Buscar tipo de incidente
-    $tipoIncidente = \App\Models\BssCinc::where('CODIGO', $request->codigo)->first();
+        // Buscar tipo de incidente
+        $tipoIncidente = \App\Models\BssCinc::where('CODIGO', $request->codigo)->first();
 
-    // Crear incidente
-    $incidente = new \App\Models\Incidente();
-    $incidente->usuario_id = auth()->id();
+        // Crear incidente
+        $incidente = new \App\Models\Incidente();
+        $incidente->usuario_id = auth()->id();
 
-    // ✅ Generar código único incremental
-    $ultimoCodigo = \App\Models\Incidente::orderBy('id', 'desc')->value('codigo');
-    if ($ultimoCodigo) {
-        $numero = (int) filter_var($ultimoCodigo, FILTER_SANITIZE_NUMBER_INT);
-        $nuevoNumero = $numero + 1;
-    } else {
-        $nuevoNumero = 1;
+        // ✅ Generar código único incremental
+        $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->count();
+        $nuevoCodigo = 'INC-' . str_pad(($ultimo), 4, '0', STR_PAD_LEFT);
+
+        $incidente->codigo = $nuevoCodigo;
+
+        // Guardar resto de datos
+        $incidente->titulo = $tipoIncidente->nombre_caso;
+        $incidente->descripcion = $request->descripcion;
+        $incidente->estado = $request->estado;
+        $incidente->prioridad = $request->prioridad;
+        $incidente->tecnico_id = $request->tecnico_id;
+        $incidente->fecha_reporte = $request->fecha_reporte;
+        $incidente->save();
+
+        // Enviar correo
+        $user = auth()->user();
+        // try{
+
+       \Mail::to($user->email)->send(new \App\Mail\IncidenteRegistradoMail($incidente));
+                // dd($correo);
+        // } catch(\Exception $e) {
+        //     // Manejar el error de envío de correo (opcional)
+        //     dd(''. $e->getMessage());
+        // }
+
+        return redirect()
+            ->route('incidentes.index')
+            ->with('success', '✅ Incidente registrado correctamente y correo enviado.');
     }
-    $incidente->codigo = 'INC-' . str_pad($nuevoNumero, 4, '0', STR_PAD_LEFT);
-
-    // Guardar resto de datos
-    $incidente->titulo = $tipoIncidente->nombre_caso;
-    $incidente->descripcion = $request->descripcion;
-    $incidente->estado = 'En proceso';
-    $incidente->prioridad = $request->prioridad;
-    $incidente->tecnico_id = $request->tecnico_id;
-    $incidente->fecha_reporte = $request->fecha_reporte;
-    $incidente->save();
-
-    // Enviar correo
-    $user = auth()->user();
-    \Mail::to($user->email)->send(new \App\Mail\IncidenteRegistradoMail($incidente));
-
-    return redirect()
-        ->route('incidentes.index')
-        ->with('success', '✅ Incidente registrado correctamente y correo enviado.');
-}
 
     /**
      * 🔹 Mostrar un incidente

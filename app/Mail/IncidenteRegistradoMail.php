@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -12,20 +11,17 @@ class IncidenteRegistradoMail extends Mailable
 
     public $incidente;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct($incidente)
     {
         $this->incidente = $incidente;
     }
 
-    /**
-     * Build the message.
-     */
     public function build()
     {
-        return $this->subject('Registro de Incidente N° ' . $this->incidente->codigo)
-                    ->view('emails.incidente-registrado');
+        return $this->subject('Nuevo incidente registrado - OpcionHelp')
+                    ->view('emails.incidente-registrado')
+                    ->with([
+                        'incidente' => $this->incidente,
+                    ]);
     }
 }
