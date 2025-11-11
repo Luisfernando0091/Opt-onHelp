@@ -23,11 +23,21 @@
       <td>{{ $incidente->titulo }}</td>
       <td>{{ Str::limit($incidente->descripcion, 50) }}</td>
       <td>
-        <span class="badge 
-          {{ $incidente->estado === 'Abierto' ? 'bg-success' : 
-             ($incidente->estado === 'Cerrado' ? 'bg-secondary' : 'bg-warning') }}">
-          {{ $incidente->estado }}
-        </span>
+    
+
+  <span class="badge 
+    @switch($incidente->estado)
+      @case('Pendiente') bg-warning text-dark @break
+      @case('En proceso') bg-info text-white @break
+      @case('A la espera') bg-secondary text-white @break
+      @case('Finalizado') bg-success text-white @break
+      @default bg-light text-dark
+    @endswitch">
+    {{ $incidente->estado }}
+  </span>
+
+
+
       </td>
       <td>{{ ucfirst($incidente->prioridad) }}</td>
       <td>{{ $incidente->usuario->name ?? '—' }}</td>
@@ -66,5 +76,6 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 </div>

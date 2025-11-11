@@ -9,6 +9,9 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IncidentesExport; // la
+use Illuminate\Support\Facades\Mail;
+use App\Mail\IncidenteRegistradoMail;
+
 class IncidenteController extends Controller
 {
     /**
@@ -76,42 +79,50 @@ class IncidenteController extends Controller
         /**
      * 🔹 Guardar nuevo incidente
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'codigo' => 'required|exists:bss_cinc,CODIGO',
-            'descripcion' => 'nullable|string',
-            'prioridad' => 'required|in:Alta,Media,Baja',
-            'fecha_reporte' => 'required|date',
-            'tecnico_id' => 'nullable|exists:users,id', // 👈 nuevo
+public function store(Request $request)
+{
+    $request->validate([
+        'codigo' => 'required|exists:bss_cinc,CODIGO',
+        'descripcion' => 'required|string',
+        'prioridad' => 'required|in:Alta,Media,Baja',
+        'tecnico_id' => 'required|exists:users,id',
+        'fecha_reporte' => 'required|date',
+    ]);
 
-        ]);
+    // Buscar tipo de incidente
+    $tipoIncidente = \App\Models\BssCinc::where('CODIGO', $request->codigo)->first();
 
-        // 1️⃣ Buscar el tipo de incidente seleccionado (A-01, etc.)
-        $tipo = BssCinc::where('CODIGO', $validated['codigo'])->first();
+    // Crear incidente
+    $incidente = new \App\Models\Incidente();
+    $incidente->usuario_id = auth()->id();
 
-        // 2️⃣ Generar código único para el nuevo incidente (ej. INC-0001)
-        $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->first();
-        $nuevoCodigo = 'INC-' . str_pad(($ultimo ? $ultimo->id + 1 : 1), 4, '0', STR_PAD_LEFT);
-
-        // 3️⃣ Crear el incidente
-        $incidente = Incidente::create([
-            'codigo' => $nuevoCodigo, // 👈 Código único del ticket
-            'titulo' => $tipo->nombre_caso, // 👈 Nombre del tipo de incidente
-            'descripcion' => $validated['descripcion'] ?? '',
-            'estado' => 'Pendiente',
-            'prioridad' => $validated['prioridad'],
-            'usuario_id' => auth()->id(),
-            'tecnico_id' => $request->input('tecnico_id'), // ✅ se guarda el técnico asignado
-            'fecha_reporte' => $validated['fecha_reporte'],
-            'solucion' => null,
-        ]);
-
-        return redirect()
-            ->route('incidentes.index')
-            ->with('success', '✅ Incidente registrado correctamente.');
+    // ✅ Generar código único incremental
+    $ultimoCodigo = \App\Models\Incidente::orderBy('id', 'desc')->value('codigo');
+    if ($ultimoCodigo) {
+        $numero = (int) filter_var($ultimoCodigo, FILTER_SANITIZE_NUMBER_INT);
+        $nuevoNumero = $numero + 1;
+    } else {
+        $nuevoNumero = 1;
     }
+    $incidente->codigo = 'INC-' . str_pad($nuevoNumero, 4, '0', STR_PAD_LEFT);
 
+    // Guardar resto de datos
+    $incidente->titulo = $tipoIncidente->nombre_caso;
+    $incidente->descripcion = $request->descripcion;
+    $incidente->estado = 'En proceso';
+    $incidente->prioridad = $request->prioridad;
+    $incidente->tecnico_id = $request->tecnico_id;
+    $incidente->fecha_reporte = $request->fecha_reporte;
+    $incidente->save();
+
+    // Enviar correo
+    $user = auth()->user();
+    \Mail::to($user->email)->send(new \App\Mail\IncidenteRegistradoMail($incidente));
+
+    return redirect()
+        ->route('incidentes.index')
+        ->with('success', '✅ Incidente registrado correctamente y correo enviado.');
+}
 
     /**
      * 🔹 Mostrar un incidente
@@ -134,30 +145,35 @@ class IncidenteController extends Controller
     /**
      * 🔹 Actualizar incidente
      */
-    public function update(Request $request, $id)
-    {
-        $incidente = Incidente::findOrFail($id);
+   public function update(Request $request, $id)
+{
+    $incidente = Incidente::findOrFail($id);
 
-        $validated = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'estado' => 'required|in:Pendiente,En proceso,A la espera,Finalizado',
-            'prioridad' => 'required|in:Baja,Media,Alta,Crítica',
-            'tecnico_id' => 'nullable|exists:users,id',
-            'solucion' => 'nullable|string',
-        ]);
+    $validated = $request->validate([
+        'titulo' => 'required|string|max:255',
+        'descripcion' => 'nullable|string',
+        'estado' => 'required|in:Pendiente,En proceso,A la espera,Finalizado',
+        'prioridad' => 'required|in:Baja,Media,Alta,Crítica',
+        'tecnico_id' => 'nullable|exists:users,id',
+        'solucion' => 'nullable|string',
+    ]);
 
-        // ✅ Si el estado cambia a "Finalizado", se registra la fecha de cierre
-        if ($validated['estado'] === 'Finalizado' && !$incidente->fecha_cierre) {
-            $validated['fecha_cierre'] = now();
-        }
-
-        $incidente->update($validated);
-
-        return redirect()
-            ->route('incidentes.index')
-            ->with('success', '✅ Incidente actualizado correctamente.');
+    // ✅ Si el estado cambia a "Finalizado" (cerrado)
+    if ($validated['estado'] === 'Finalizado') {
+        $validated['fecha_cierre'] = now();
+    } 
+    // ✅ Si el estado NO es finalizado, eliminar la fecha de cierre anterior
+    else {
+        $validated['fecha_cierre'] = null;
     }
+
+    $incidente->update($validated);
+
+    return redirect()
+        ->route('incidentes.index')
+        ->with('success', '✅ Incidente actualizado correctamente.');
+}
+
 
     /**
      * 🔹 Eliminar incidente

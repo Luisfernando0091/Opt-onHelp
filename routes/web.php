@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\IncidenteController;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -18,6 +19,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
 });
 
+
+Route::get('/test-email', function () {
+    Mail::raw('Correo de prueba desde OpcionHelp 🚀', function ($message) {
+        $message->to('tucorreo@option.com.pe') // 👈 aquí va tu correo real
+                ->subject('Prueba de envío desde Laravel');
+    });
+    return '✅ Correo enviado correctamente. Revisa Mailtrap.';
+});
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
