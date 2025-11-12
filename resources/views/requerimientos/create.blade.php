@@ -15,33 +15,23 @@
             <form method="POST" action="{{ route('requerimientos.store') }}">
               @csrf
 
+              {{-- Código y Tipo de requerimiento --}}
               <div class="row">
-                {{-- Código del requerimiento --}}
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Código del requerimiento</label>
                   <input type="text" class="form-control" value="{{ $nuevoCodigo }}" readonly>
                 </div>
 
-                {{-- Categoría --}}
                 <div class="col-md-6 mb-3">
                   <label class="form-label">Tipo de requerimiento</label>
-                 <select name="codigo" id="codigo" class="form-select" required>
-  <option value="">-- Seleccione un requerimiento --</option>
-  @foreach($tiposRequerimientos as $tipo)
-    <option value="{{ $tipo->CODIGO }}">{{ $tipo->nombre_caso }}</option>
-  @endforeach
-</select>
-
+                  <select name="codigo" id="codigo" class="form-select" required>
+                    <option value="">-- Seleccione un requerimiento --</option>
+                    @foreach($tiposRequerimientos as $tipo)
+                      <option value="{{ $tipo->CODIGO }}">{{ $tipo->nombre_caso }}</option>
+                    @endforeach
+                  </select>
                 </div>
               </div>
-
-              </div>
-
-              {{-- Título --}}
-              {{-- <div class="mb-3">
-                <label class="form-label">Título</label>
-                <input type="text" name="titulo" class="form-control" placeholder="Ingrese el título del requerimiento" required>
-              </div> --}}
 
               {{-- Descripción --}}
               <div class="mb-3">
@@ -93,12 +83,14 @@
                   <i class="mdi mdi-cancel"></i> Cancelar
                 </a>
               </div>
-
             </form>
+            
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+ </div>
 </div>
 @endsection

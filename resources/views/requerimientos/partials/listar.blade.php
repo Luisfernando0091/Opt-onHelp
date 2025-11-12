@@ -9,9 +9,16 @@
         <br/>
         <div class="card shadow-sm border-0 rounded-4">
           <div class="card-body">
-            <h4 class="fw-bold text-primary mb-4">
-              <i class="mdi mdi-clipboard-list-outline me-2"></i> Lista de Requerimientos
-            </h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="fw-bold text-primary mb-0">
+                <i class="mdi mdi-clipboard-list-outline me-2"></i> Lista de Requerimientos
+              </h4>
+
+              <!-- 🔹 Botón de nuevo requerimiento -->
+              <a href="{{ route('requerimientos.create') }}" class="btn btn-primary shadow-sm">
+                <i class="mdi mdi-plus-circle-outline me-1"></i> Nuevo Requerimiento
+              </a>
+            </div>
 
             <div class="table-responsive">
               <table class="table table-hover table-bordered align-middle">
@@ -87,7 +94,6 @@
     </div>
   </div>
 </div>
- </div>
   </div>
-
+</div>
 @endsection

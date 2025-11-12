@@ -206,7 +206,7 @@
             <div class="collapse" id="menu-ticket">
               <ul class="nav flex-column sub-menu ps-4">
                 <li><a class="nav-link py-1" href="{{ route('incidentes.index') }}">Incidente</a></li>
-                <li><a class="nav-link py-1" href="#">Requerimiento</a></li>
+                <li><a class="nav-link py-1" href="{{ route('requerimientos.index') }}">Requerimiento</a></li>
               </ul>
             </div>
           </li>

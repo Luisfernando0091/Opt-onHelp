@@ -19,7 +19,7 @@ class RequerimientoController extends Controller
     /**
      * 📋 Mostrar lista de requerimientos
      */
-   public function index(Request $request)
+public function index(Request $request)
 {
     $user = auth()->user();
 
@@ -27,30 +27,27 @@ class RequerimientoController extends Controller
         $requerimientos = Requerimiento::with(['usuario', 'tecnico'])
             ->orderByDesc('id')
             ->get();
-
     } elseif ($user->hasRole('tecnico')) {
         $requerimientos = Requerimiento::with(['usuario', 'tecnico'])
             ->where('tecnico_id', $user->id)
             ->orderByDesc('id')
             ->get();
-
     } elseif ($user->hasRole('usuario')) {
         $requerimientos = Requerimiento::with(['usuario', 'tecnico'])
             ->where('usuario_id', $user->id)
             ->orderByDesc('id')
             ->get();
-
     } else {
         $requerimientos = collect();
     }
 
-    // 🔹 Si es AJAX, devuelves solo la parte de la tabla
+    // 🔹 Si es una solicitud AJAX (solo recarga la tabla)
     if ($request->ajax()) {
         return view('requerimientos.partials.listar', compact('requerimientos'))->render();
     }
 
-    // 🔹 Si no es AJAX, también cargamos directamente la tabla
-    return view('requerimientos.partials.listar', compact('requerimientos'));
+    // 🔹 Si es una vista completa (primera carga)
+    return view('requerimientos.index', compact('requerimientos'));
 }
 
 
