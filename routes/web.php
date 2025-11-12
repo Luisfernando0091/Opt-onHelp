@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\IncidenteController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\RequerimientoController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -48,3 +49,6 @@ Route::get('/reportes/incidentes', [App\Http\Controllers\IncidenteController::cl
 Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPdf'])->name('incidentes.export.pdf');
 Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])->name('incidentes.export.excel');
 Route::get('/reportes/incidentes', [IncidenteController::class, 'reporte'])->name('reportes.incidentes');
+
+
+Route::resource('requerimientos', RequerimientoController::class);

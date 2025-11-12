@@ -2,78 +2,109 @@
 
 @section('content')
 <div class="main-panel">
-  <div class="content-wrapper">
+  <div class="content-wrapper py-4">
 
-    {{-- Leave Report con contadores --}}
-    <div class="row mb-4">
+    {{-- Dashboard principal --}}
+    <div class="row g-4">
       <div class="col-lg-12">
-        <div class="card card-rounded">
+        <br><br/>
+        <div class="card shadow-sm border-0 rounded-4">
           <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4 class="card-title card-title-dash">Casos Registrados</h4>
-              <span class="badge bg-primary">Reporte General</span>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="fw-bold text-primary mb-0">
+                <i class="mdi mdi-chart-bar me-2"></i> Casos Registrados
+              </h4>
+              <span class="badge bg-gradient-primary px-3 py-2 fs-6">Reporte General</span>
             </div>
 
-            <div class="row text-center mt-4">
-              <div class="col-md-4">
-                <h5>Pendientes</h5>
-                <h3 class="text-danger">{{ $pendientes }}</h3>
+            {{-- Contadores --}}
+            <div class="row text-center mt-3">
+              <div class="col-md-4 mb-3">
+                <div class="p-3 bg-light rounded-4 shadow-sm">
+                  <h6 class="text-muted mb-2">Pendientes</h6>
+                  <h2 class="fw-bold text-danger mb-0">{{ $pendientes }}</h2>
+                </div>
               </div>
-              <div class="col-md-4">
-                <h5>En Proceso</h5>
-                <h3 class="text-warning">{{ $en_proceso }}</h3>
+              <div class="col-md-4 mb-3">
+                <div class="p-3 bg-light rounded-4 shadow-sm">
+                  <h6 class="text-muted mb-2">En Proceso</h6>
+                  <h2 class="fw-bold text-warning mb-0">{{ $en_proceso }}</h2>
+                </div>
               </div>
-              <div class="col-md-4">
-                <h5>Cerrados</h5>
-                <h3 class="text-success">{{ $cerrados }}</h3>
+              <div class="col-md-4 mb-3">
+                <div class="p-3 bg-light rounded-4 shadow-sm">
+                  <h6 class="text-muted mb-2">Cerrados</h6>
+                  <h2 class="fw-bold text-success mb-0">{{ $cerrados }}</h2>
+                </div>
               </div>
             </div>
 
             <hr class="my-4">
 
             <div class="text-center">
-              <h5>Total de casos: 
-                <strong class="text-primary">{{ $pendientes + $en_proceso + $cerrados }}</strong>
-              </h5>
+              <h6 class="text-muted mb-1">Total de casos</h6>
+              <h3 class="fw-bold text-primary">
+                {{ $pendientes + $en_proceso + $cerrados }}
+              </h3>
             </div>
 
             <div class="text-center mt-4">
-              <h5>Tiempo promedio de resolución:</h5>
-              <h4 class="text-info">{{ $tiempo_promedio }} horas</h4>
+              <h6 class="text-muted mb-1">Tiempo promedio de resolución</h6>
+              <h4 class="fw-bold text-info">
+                {{ $tiempo_promedio }}
+              </h4>
             </div>
-
           </div>
         </div>
       </div>
     </div>
 
-    {{-- Tickets por Estado (gráfico existente) --}}
-    <div class="row">
+    {{-- Gráfico Donut --}}
+    <div class="row mt-4">
       <div class="col-lg-12">
-        <div class="card card-rounded">
+        <div class="card shadow-sm border-0 rounded-4">
           <div class="card-body text-center">
-            <h4 class="card-title mb-3">Tickets por Estado</h4>
-            <p class="card-description">Bienvenido al sistema OpcionHelp</p>
+            <h4 class="fw-bold text-dark mb-2">
+              <i class="mdi mdi-chart-donut-variant me-2 text-primary"></i>Tickets por Estado
+            </h4>
+            <p class="text-muted">Bienvenido al sistema <strong>OpcionHelp</strong></p>
 
-            <div class="chart-container" style="height: 300px; width: 300px; margin: 0 auto;">
+            <div class="chart-container position-relative mx-auto" style="height: 320px; width: 320px;">
               <canvas id="doughnutChart"></canvas>
             </div>
 
-            <div id="doughnutChart-legend" class="mt-3 text-center"></div>
+            <div id="doughnutChart-legend" class="mt-3"></div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    {{-- === Area Chart mensual === --}}
+    <div class="row mt-4">
+      <div class="col-lg-12">
+        <div class="card shadow-sm border-0 rounded-4">
+          <div class="card-body text-center">
+            <h4 class="fw-bold text-dark mb-3">
+              <i class="mdi mdi-chart-areaspline me-2 text-info"></i> Tickets por Mes
+            </h4>
+            <p class="text-muted mb-4">Distribución mensual de Incidentes y Requerimientos</p>
+
+            <div class="chart-container position-relative mx-auto" style="height: 340px; width: 100%;">
+              <canvas id="areaChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+ </div>
+</div>
   </div> {{-- /.content-wrapper --}}
 </div> {{-- /.main-panel --}}
 
 {{-- Chart.js --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-  // Gráfico Tickets por Estado
+  // === Donut Chart ===
   const ctx = document.getElementById('doughnutChart').getContext('2d');
   new Chart(ctx, {
     type: 'doughnut',
@@ -81,19 +112,59 @@
       labels: ['Pendiente', 'En Proceso', 'Cerrado'],
       datasets: [{
         data: [{{ $pendientes }}, {{ $en_proceso }}, {{ $cerrados }}],
-        backgroundColor: ['#cc0000', '#f1c40f', '#2ecc71'],
-        borderWidth: 2
+        backgroundColor: ['#ef4444', '#facc15', '#22c55e'],
+        borderColor: '#fff',
+        borderWidth: 3,
+        hoverOffset: 12
       }]
     },
     options: {
       responsive: true,
-      cutout: '70%',
+      cutout: '65%',
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { color: '#555', font: { size: 14 } }
+          labels: {
+            color: '#444',
+            font: { size: 14, weight: '600' },
+            padding: 20
+          }
         }
       }
+    }
+  });
+
+  // === Area Chart ===
+  const ctxArea = document.getElementById('areaChart').getContext('2d');
+  new Chart(ctxArea, {
+    type: 'line',
+    data: {
+      labels: @json($meses),
+      datasets: [
+        {
+          label: 'Incidentes',
+          data: @json($incidentes),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239,68,68,0.2)',
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: 'Requerimientos',
+          data: @json($requerimientos),
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true, ticks: { precision: 0 } }
+      },
+      plugins: { legend: { position: 'bottom' } }
     }
   });
 </script>

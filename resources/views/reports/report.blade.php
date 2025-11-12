@@ -5,6 +5,8 @@
   <div class="content-wrapper">
     <div class="row">
       <div class="col-lg-12">
+          <br>
+        <br/>
         <div class="card card-rounded">
 
           {{-- 🔍 Filtros de búsqueda --}}

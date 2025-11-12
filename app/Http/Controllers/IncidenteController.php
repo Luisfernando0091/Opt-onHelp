@@ -59,16 +59,17 @@ class IncidenteController extends Controller
     /**
      * 🔹 Mostrar formulario para crear incidente
      */
-   public function create()
+public function create()
 {
-    $tiposIncidentes = BssCinc::all();
+    // Tipos de incidente (tabla bss_cinc)
+    $tiposIncidentes = \App\Models\BssCinc::all();
 
-    // ✅ Solo usuarios con el rol "tecnico"
-    $tecnicos = User::role('tecnico')
+    // Técnicos con rol 'tecnico' activos
+    $tecnicos = \App\Models\User::role('tecnico')
         ->where('activo', 1)
         ->get();
 
-    // Generar el nuevo código del ticket
+    // Generar nuevo código
     $ultimo = \App\Models\Incidente::orderBy('id', 'desc')->count();
     $nuevoCodigo = 'INC-' . str_pad(($ultimo), 4, '0', STR_PAD_LEFT);
 
