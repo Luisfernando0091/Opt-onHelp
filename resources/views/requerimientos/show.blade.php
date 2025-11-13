@@ -6,7 +6,9 @@
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-lg-12">
+                <br>
+                <br/>
                 <div class="card card-rounded shadow-lg border-0">
                     
                     {{-- 🔹 Encabezado --}}

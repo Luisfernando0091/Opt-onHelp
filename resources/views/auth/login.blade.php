@@ -12,8 +12,8 @@
     <img src="{{ asset('assets/A/logo.png') }}" alt="logo" style="width:150px;height:80px;object-fit:contain;">
   </div>
 
-  <h4 class="text-center">Hello! Let's get started</h4>
-  <h6 class="fw-light text-center mb-4">Sign in to continue.</h6>
+  {{-- <h4 class="text-center">Sign in to continue.</h4>
+  <h6 class="fw-light text-center mb-4">Sign in to continue.</h6> --}}
 
   {{-- ALERTAS --}}
   @if (session('error'))
@@ -50,5 +50,5 @@
       </div>
     </div>
   </div>
-</div>
+
 @endsection

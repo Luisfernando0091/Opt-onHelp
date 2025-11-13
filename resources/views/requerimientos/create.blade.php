@@ -57,7 +57,7 @@
 
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Técnico asignado</label>
-                  <select name="tecnico_id" class="form-select">
+                  <select name="tecnico_id" class="form-select" required>
                     <option value="">-- Seleccione un técnico --</option>
                     @foreach($tecnicos as $tecnico)
                       <option value="{{ $tecnico->id }}">
