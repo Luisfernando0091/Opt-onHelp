@@ -47,6 +47,7 @@ public function index(Request $request)
     }
 
     // 🔹 Si es una vista completa (primera carga)
+    
     return view('requerimientos.index', compact('requerimientos'));
 }
 

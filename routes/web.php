@@ -11,44 +11,38 @@ Route::get('/', fn() => redirect()->route('login'));
 
 Auth::routes();
 
-// Solo accesible por admin
-// Route::middleware(['auth', 'role:admin'])->group(function () {
-//     Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
-// });
+// Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('usuarios', UserController::class);
-    
 });
-
 
 Route::get('/test-email', function () {
     Mail::raw('Correo de prueba desde OpcionHelp 🚀', function ($message) {
-        $message->to('tucorreo@option.com.pe') // 👈 aquí va tu correo real
+        $message->to('tucorreo@option.com.pe')
                 ->subject('Prueba de envío desde Laravel');
     });
-    return '✅ Correo enviado correctamente. Revisa Mailtrap.';
+    return '✅ Correo enviado correctamente.';
 });
 
-
+// Home
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Incidentes CRUD
 Route::resource('incidentes', IncidenteController::class);
-//EXPORTAR
 
-Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPDF'])
+// EXPORTAR PDF / EXCEL
+Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPdf'])
     ->name('incidentes.export.pdf');
 
 Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])
     ->name('incidentes.export.excel');
 
+// REPORTES
+Route::get('/reportes/incidentes', [IncidenteController::class, 'reporte'])
+    ->name('reportes.incidentes');
 
-
-Route::get('/reportes/incidentes', [App\Http\Controllers\IncidenteController::class, 'reporte'])
-     ->name('reportes.incidentes');
-
-Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPdf'])->name('incidentes.export.pdf');
-Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])->name('incidentes.export.excel');
-Route::get('/reportes/incidentes', [IncidenteController::class, 'reporte'])->name('reportes.incidentes');
-
-
+// Requerimientos CRUD
 Route::resource('requerimientos', RequerimientoController::class);
+
+Route::put('/usuarios/{id}/cambiar-estado', [App\Http\Controllers\UserController::class, 'cambiarEstado'])
+    ->name('usuarios.cambiarEstado');

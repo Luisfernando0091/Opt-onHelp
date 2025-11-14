@@ -34,25 +34,34 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach($usuarios as $user)
-                    <tr>
-                      <td class="py-1">
-                        <img src="{{ asset('img/B/face8.png') }}" alt="user" width="40" height="40" class="rounded-circle" />
-                      </td>
-                      <td>{{ $user->name }}</td>
-                      <td>{{ $user->email }}</td>
-                      <td>{{ $user->roleData->name ?? 'Sin rol' }}</td>
-                      <td>{{ $user->phone ?? '-' }}</td>
-                      <td>
-                        @if($user->activo)
-                          <label class="badge badge-success">Activo</label>
-                        @else
-                          <label class="badge badge-danger">Inactivo</label>
-                        @endif
-                      </td>
-                      <td>{{ $user->created_at->format('d M Y') }}</td>
-                    </tr>
-                  @endforeach
+                 @foreach($usuarios as $user)
+<tr>
+    <td class="py-1">
+        <img src="{{ asset('img/B/face8.png') }}" alt="user" width="40" height="40" class="rounded-circle" />
+    </td>
+    <td>{{ $user->name }}</td>
+    <td>{{ $user->email }}</td>
+    <td>{{ $user->roleData->name ?? 'Sin rol' }}</td>
+    <td>{{ $user->phone ?? '-' }}</td>
+
+    <!-- 🌟 AQUÍ VA EL BOTÓN DE ESTADO 🌟 -->
+    <td>
+        <form action="{{ route('usuarios.cambiarEstado', $user->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            @if($user->activo)
+                <button class="btn btn-sm btn-success" type="submit">Activo</button>
+            @else
+                <button class="btn btn-sm btn-danger" type="submit">Inactivo</button>
+            @endif
+        </form>
+    </td>
+
+    <td>{{ $user->created_at->format('d M Y') }}</td>
+</tr>
+@endforeach
+
                 </tbody>
               </table>
             </div>

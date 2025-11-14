@@ -105,5 +105,15 @@ class UserController extends Controller
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
     }
-    
+    public function cambiarEstado($id)
+{
+    $usuario = User::findOrFail($id);
+
+    // Si no existe el campo 'activo', avísame para crearlo
+    $usuario->activo = !$usuario->activo;
+    $usuario->save();
+
+    return back()->with('success', 'Estado del usuario actualizado.');
+}
+
 }

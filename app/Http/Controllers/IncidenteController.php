@@ -46,7 +46,6 @@ class IncidenteController extends Controller
         // Por si acaso, si no tiene rol asignado
         $incidentes = collect(); // devuelve una colección vacía
     }
-
     // Si es una petición AJAX (para actualizar la tabla)
     if ($request->ajax()) {
         return view('incidentes.partials.lista', compact('incidentes'))->render();
@@ -198,7 +197,18 @@ public function create()
 
 public function exportPdf(Request $request)
 {
-    $query = Incidente::with(['usuario', 'tecnico']);
+   $tipo = $request->get('tipo', 'incidente'); // por defecto incidente
+
+    if ($tipo === 'requerimiento') {
+
+        $query = \App\Models\Requerimiento::with(['usuario', 'tecnico']);
+
+    } else {
+
+        // tipo incidente
+        $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+    }
+
 
     if ($request->filled('fecha_desde')) {
         $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
@@ -225,11 +235,57 @@ $pdf = Pdf::loadView('incidentes.export_pdf', compact('incidentes'))
     // Descargar el archivo
     return $pdf->download('reporte_incidentes.pdf');
 }
+// public function exportPdf(Request $request)
+// {
+//     $tipo = $request->get('tipo', 'incidente');
+
+//     if ($tipo === 'requerimiento') {
+//         $query = \App\Models\Requerimiento::with(['usuario', 'tecnico']);
+//     } else {
+//         $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+//     }
+
+//     // Filtros
+//     if ($request->filled('fecha_desde')) {
+//         $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
+//     }
+//     if ($request->filled('fecha_hasta')) {
+//         $query->whereDate('fecha_reporte', '<=', $request->fecha_hasta);
+//     }
+//     if ($request->filled('mes')) {
+//         $query->whereMonth('fecha_reporte', $request->mes);
+//     }
+
+//     $data = $query->get();
+
+//     if ($data->isEmpty()) {
+//         return back()->with('warning', '⚠️ No hay datos para exportar.');
+//     }
+
+//     // Usa la misma vista para ambos
+//     $pdf = Pdf::loadView('reports.pdf_general', [
+//         'data' => $data,
+//         'tipo'  => $tipo
+//     ])->setPaper('a4', 'landscape');
+
+//     return $pdf->download("reporte_{$tipo}.pdf");
+// }
+
 
 
 public function exportExcel(Request $request)
 {
-    $query = Incidente::with(['usuario', 'tecnico']);
+ $tipo = $request->get('tipo', 'incidente'); // por defecto incidente
+
+    if ($tipo === 'requerimiento') {
+
+        $query = \App\Models\Requerimiento::with(['usuario', 'tecnico']);
+
+    } else {
+
+        // tipo incidente
+        $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+    }
 
     if ($request->filled('fecha_desde')) {
         $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
@@ -251,11 +307,55 @@ public function exportExcel(Request $request)
 
     return Excel::download(new \App\Exports\IncidentesExport($incidentes), 'reporte_incidentes.xlsx');
 }
+// public function exportExcel(Request $request)
+// {
+//     return Excel::download(
+//         new \App\Exports\GeneralExport(
+//             tipo: $request->tipo ?? 'incidente',
+//             filtros: $request->all()
+//         ),
+//         "reporte_{$request->tipo}.xlsx"
+//     );
+// }
 
+// 14 11 / 25 SE CAMBIO  
+
+// public function reporte(Request $request)
+// {
+//     $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+
+//     if ($request->filled('fecha_desde')) {
+//         $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
+//     }
+
+//     if ($request->filled('fecha_hasta')) {
+//         $query->whereDate('fecha_reporte', '<=', $request->fecha_hasta);
+//     }
+
+//     if ($request->filled('mes')) {
+//         $query->whereMonth('fecha_reporte', $request->mes);
+//     }
+
+//     $incidentes = $query->orderBy('fecha_reporte', 'desc')->get();
+
+//     return view('reports.report', compact('incidentes'));
+// }
 public function reporte(Request $request)
 {
-    $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+    // tipo = incidente | requerimiento
+    $tipo = $request->get('tipo', 'incidente'); // por defecto incidente
 
+    if ($tipo === 'requerimiento') {
+
+        $query = \App\Models\Requerimiento::with(['usuario', 'tecnico']);
+
+    } else {
+
+        // tipo incidente
+        $query = \App\Models\Incidente::with(['usuario', 'tecnico']);
+    }
+
+    // 🔹 Filtros iguales para ambos tipos
     if ($request->filled('fecha_desde')) {
         $query->whereDate('fecha_reporte', '>=', $request->fecha_desde);
     }
@@ -268,9 +368,13 @@ public function reporte(Request $request)
         $query->whereMonth('fecha_reporte', $request->mes);
     }
 
-    $incidentes = $query->orderBy('fecha_reporte', 'desc')->get();
+    // 🔹 Ejecutar consulta
+    $data = $query->orderBy('fecha_reporte', 'desc')->get();
 
-    return view('reports.report', compact('incidentes'));
+    return view('reports.report', [
+        'data' => $data,
+        'tipo' => $tipo
+    ]);
 }
 
 

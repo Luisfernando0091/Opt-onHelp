@@ -183,12 +183,15 @@
 
           <li class="nav-item mt-3 text-uppercase text-muted small ps-4">Gestión</li>
 
-          <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active-link' : '' }}" href="{{ route('usuarios.index') }}">
-              <i class="mdi mdi-account-multiple-outline menu-icon"></i>
-              <span>Usuarios</span>
-            </a>
-          </li>
+         @role('admin')
+<li class="nav-item">
+  <a class="nav-link {{ request()->routeIs('usuarios.index') ? 'active-link' : '' }}" href="{{ route('usuarios.index') }}">
+    <i class="mdi mdi-account-multiple-outline menu-icon"></i>
+    <span>Usuarios</span>
+  </a>
+</li>
+@endrole
+
 
           <li class="nav-item">
             <a class="nav-link" href="{{ route('reportes.incidentes') }}">
