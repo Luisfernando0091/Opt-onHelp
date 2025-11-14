@@ -8,50 +8,43 @@ use Illuminate\Http\Request;
 
 class IncidenteApiController extends Controller
 {
+    // Listar todos los incidentes
     public function index()
     {
         return response()->json(Incidente::all());
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-        ]);
-
-        $incidente = Incidente::create($data);
-        return response()->json($incidente, 201);
-    }
-
+    // Obtener información de un incidente
     public function show($id)
     {
         $incidente = Incidente::find($id);
+
         if (!$incidente) {
-            return response()->json(['message' => 'Incidente no encontrado'], 404);
+            return response()->json(['error' => 'Incidente no encontrado'], 404);
         }
+
         return response()->json($incidente);
     }
 
-    public function update(Request $request, $id)
+    // Actualizar solo solución y estado
+    public function updateSolucion(Request $request, $id)
     {
         $incidente = Incidente::find($id);
+
         if (!$incidente) {
-            return response()->json(['message' => 'Incidente no encontrado'], 404);
+            return response()->json(['error' => 'Incidente no encontrado'], 404);
         }
 
-        $incidente->update($request->all());
-        return response()->json($incidente);
-    }
+        $data = $request->validate([
+            'solucion' => 'required|string',
+            'estado'   => 'required|string',
+        ]);
 
-    public function destroy($id)
-    {
-        $incidente = Incidente::find($id);
-        if (!$incidente) {
-            return response()->json(['message' => 'Incidente no encontrado'], 404);
-        }
+        $incidente->update($data);
 
-        $incidente->delete();
-        return response()->json(['message' => 'Incidente eliminado correctamente']);
+        return response()->json([
+            'message'   => 'Incidente actualizado correctamente',
+            'incidente' => $incidente
+        ]);
     }
 }

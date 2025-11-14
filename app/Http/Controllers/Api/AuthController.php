@@ -13,27 +13,38 @@ class AuthController extends Controller
     // 🔹 REGISTRO
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'LastName' => 'required|string|max:100',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|confirmed|min:6',
+            'lastname' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'role' => 'required|string'
         ]);
 
+        // Si viene lastname usarlo, sino last_name
+        $lastName = $request->lastname ?? $request->last_name;
+
+        if (!$lastName) {
+            return response()->json([
+                'error' => 'Debe enviar lastname o last_name'
+            ], 422);
+        }
+
+        // Crear usuario
         $user = User::create([
-            'name' => $validated['name'],
-            'LastName' => $validated['LastName'],
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'name' => $request->name,
+            'email' => $request->email,
+            'LastName' => $lastName,   // 👈 tu columna exacta
+            'password' => bcrypt($request->password)
         ]);
 
-        // Generar token de acceso
-        $token = $user->createToken('mobile_app_token')->plainTextToken;
+        // Asignar rol
+        $user->assignRole($request->role);
 
         return response()->json([
             'message' => 'Usuario registrado correctamente',
-            'user' => $user,
-            'token' => $token,
+            'user' => $user
         ], 201);
     }
 
@@ -53,7 +64,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // Elimina tokens anteriores (opcional)
         $user->tokens()->delete();
 
         $token = $user->createToken('mobile_app_token')->plainTextToken;
