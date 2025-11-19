@@ -157,30 +157,52 @@ class HomeController extends Controller
     // 2. TIEMPO PROMEDIO DE RESOLUCIÓN (INCIDENTES)
     // ==========================================================
 
-    $incidentes_cerrados = $incQuery
-        ->whereNotNull('fecha_cierre')
-        ->whereIn('estado', ['Cerrado', 'Finalizado'])
-        ->get();
+    // $incidentes_cerrados = $incQuery
+    //     ->whereNotNull('fecha_cierre')
+    //     ->whereIn('estado', ['Cerrado', 'Finalizado'])
+    //     ->get();
 
-    $tiempo_total_min = 0;
-    $total_cerrados = $incidentes_cerrados->count();
+    // $tiempo_total_min = 0;
+    // $total_cerrados = $incidentes_cerrados->count();
 
-    foreach ($incidentes_cerrados as $item) {
-        $inicio = \Carbon\Carbon::parse($item->created_at);
-        $fin = \Carbon\Carbon::parse($item->fecha_cierre);
-        $tiempo_total_min += $inicio->diffInMinutes($fin);
-    }
+    // foreach ($incidentes_cerrados as $item) {
+    //     $inicio = \Carbon\Carbon::parse($item->created_at);
+    //     $fin = \Carbon\Carbon::parse($item->fecha_cierre);
+    //     $tiempo_total_min += $inicio->diffInMinutes($fin);
+    // }
 
-    $promedio_min = $total_cerrados > 0 ? round($tiempo_total_min / $total_cerrados) : 0;
+    // $promedio_min = $total_cerrados > 0 ? round($tiempo_total_min / $total_cerrados) : 0;
 
-    if ($promedio_min >= 60) {
-        $horas = intdiv($promedio_min, 60);
-        $minutos = $promedio_min % 60;
-        $tiempo_promedio = $minutos > 0 ? "{$horas} h {$minutos} min" : "{$horas} h";
-    } else {
-        $tiempo_promedio = "≈{$promedio_min} minutos";
-    }
+    // if ($promedio_min >= 60) {
+    //     $horas = intdiv($promedio_min, 60);
+    //     $minutos = $promedio_min % 60;
+    //     $tiempo_promedio = $minutos > 0 ? "{$horas} h {$minutos} min" : "{$horas} h";
+    // } else {
+    //     $tiempo_promedio = "≈{$promedio_min} minutos";
+    // }
+      $incidentes_cerrados = Incidente::whereNotNull('fecha_cierre')
+            ->whereIn('estado', ['Cerrado', 'Finalizado'])
+            ->get();
 
+        $tiempo_total_min = 0;
+        $total_cerrados = $incidentes_cerrados->count();
+
+        foreach ($incidentes_cerrados as $item) {
+            $inicio = Carbon::parse($item->created_at);
+            $fin = Carbon::parse($item->fecha_cierre);
+            $tiempo_total_min += $inicio->diffInMinutes($fin);
+        }
+
+        $promedio_min = $total_cerrados > 0 ? $tiempo_total_min / $total_cerrados : 0;
+        $promedio_min = round($promedio_min);
+
+        if ($promedio_min >= 60) {
+            $horas = intdiv($promedio_min, 60);
+            $minutos = $promedio_min % 60;
+            $tiempo_promedio = $minutos > 0 ? "{$horas} h {$minutos} min" : "{$horas} h";
+        } else {
+            $tiempo_promedio = "≈{$promedio_min} minutos";
+        }
     // ==========================================================
     // 3. TICKETS POR MES
     // ==========================================================

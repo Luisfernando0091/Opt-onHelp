@@ -59,12 +59,21 @@
             </div>
 
             {{-- Tiempo promedio --}}
-            <div class="text-center mt-4">
+            {{-- <div class="text-center mt-4">
               <h6 class="text-muted mb-1">Tiempo promedio de resolución</h6>
               <h4 class="fw-bold text-info">
                 {{ $tiempo_promedio }}
               </h4>
-            </div>
+            </div> --}}
+            @role('admin|tecnico')
+<div class="text-center mt-4">
+  <h6 class="text-muted mb-1">Tiempo promedio de resolución</h6>
+  <h4 class="fw-bold text-info">
+    {{ $tiempo_promedio }}
+  </h4>
+</div>
+@endrole
+
 
           </div>
         </div>

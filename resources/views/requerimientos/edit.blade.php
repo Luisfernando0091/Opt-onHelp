@@ -77,7 +77,7 @@
                     <option value="Media" {{ $requerimiento->prioridad == 'Media' ? 'selected' : '' }}>Media</option>
                     <option value="Alta" {{ $requerimiento->prioridad == 'Alta' ? 'selected' : '' }}>Alta</option>
                   </select>
-                </div>
+            
               </div>
                 <div class="col-md-4">
                   <label for="tecnico_id" class="form-label fw-bold">Técnico Asignado</label>

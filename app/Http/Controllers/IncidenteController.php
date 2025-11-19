@@ -102,6 +102,14 @@ class IncidenteController extends Controller
         $incidente = Incidente::findOrFail($id);
         return view('incidentes.edit', compact('incidente'));
     }
+/**
+ * 🔹 Mostrar detalle del incidente
+ */
+public function show($id)
+{
+    $incidente = Incidente::with(['usuario', 'tecnico'])->findOrFail($id);
+    return view('incidentes.show', compact('incidente'));
+}
 
     /**
      * 🔹 Actualizar incidente
