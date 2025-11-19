@@ -52,14 +52,14 @@
 
               {{-- Si tu tabla requerimientos tiene “tipo” o “categoría” --}}
               <div class="row mb-3">
-                <div class="col-md-4">
+                {{-- <div class="col-md-4">
                   <label for="tipo" class="form-label fw-bold">Tipo de Requerimiento</label>
                   <select name="tipo" id="tipo" class="form-select">
                     <option value="Funcional" {{ $requerimiento->tipo == 'Funcional' ? 'selected' : '' }}>Funcional</option>
                     <option value="Técnico" {{ $requerimiento->tipo == 'Técnico' ? 'selected' : '' }}>Técnico</option>
                     <option value="Otro" {{ $requerimiento->tipo == 'Otro' ? 'selected' : '' }}>Otro</option>
                   </select>
-                </div>
+                </div> --}}
 
                 <div class="col-md-4">
                   <label for="estado" class="form-label fw-bold">Estado</label>

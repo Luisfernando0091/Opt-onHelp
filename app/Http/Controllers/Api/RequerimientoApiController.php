@@ -14,6 +14,7 @@ class RequerimientoApiController extends Controller
     public function index()
     {
         //
+        return response()->json(Requerimiento::all());
     }
 
     /**
@@ -27,10 +28,15 @@ class RequerimientoApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Requerimiento $requerimiento)
+    public function show($id)
     {
-        //
-    }
+        $requerimiento = Requerimiento::find($id);
+        if(!$requerimiento)
+        {   
+            return response()->json(['error'=>'Requerimiento no encontrado'],404);
+        } 
+        return response()->json($requerimiento);
+   }
 
     /**
      * Update the specified resource in storage.

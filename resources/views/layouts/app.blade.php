@@ -228,7 +228,7 @@
             <div class="collapse" id="menu-perfil" data-bs-parent="#sidebar">
               <div class="card bg-transparent border-0 p-3">
                 <div class="d-flex align-items-center mb-2">
-                  <img src="{{ asset('img/B/face8.png') }}" alt="profile" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;">
+                  {{-- <img src="{{ asset('img/B/face8.png') }}" alt="profile" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;"> --}}
                   <div class="ms-3">
                     <div class="fw-bold">{{ Auth::user()->name ?? 'Usuario' }}</div>
                     <div class="text-muted small">{{ Auth::user()->email ?? '' }}</div>
@@ -236,11 +236,11 @@
                 </div>
 
                 <ul class="list-unstyled mb-0">
-                  <li>
+                  {{-- <li>
                     <a href="#" class="d-block py-1 text-decoration-none text-dark">
                       <i class="mdi mdi-account-outline me-2"></i> Ver Perfil
                     </a>
-                  </li>
+                  </li> --}}
                   <li class="mt-2">
                     <form method="POST" action="{{ route('logout') }}">
                       @csrf

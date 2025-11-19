@@ -31,7 +31,7 @@
                   <input type="text" class="form-control" value="{{ $incidente->codigo }}" disabled>
                 </div>
                 <div class="col-md-6">
-                  <label for="titulo" class="form-label fw-bold">Título</label>
+                  <label for="titulo" class="form-label fw-bold">Incidente</label>
                   <input type="text" name="titulo" id="titulo" 
                          class="form-control @error('titulo') is-invalid @enderror"
                          value="{{ old('titulo', $incidente->titulo) }}">

@@ -65,12 +65,13 @@ protected function sendFailedLoginResponse(\Illuminate\Http\Request $request)
     protected function authenticated($request, $user)
 {
     // Si el usuario tiene rol "usuario" va a su propio dashboard
-    if ($user->hasRole('usuario')) {
-        return redirect()->route('usuario.dashboard');
-    }
+    // if ($user->hasRole('usuario')) {
+    //     return redirect()->route('usuario.dashboard');
+    // }
 
     // Otros roles → dashboard normal
-    return redirect('/home');
+ return redirect('/home');
+
 }
 
 }
