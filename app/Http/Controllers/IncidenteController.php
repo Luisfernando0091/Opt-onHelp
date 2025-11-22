@@ -62,37 +62,85 @@ class IncidenteController extends Controller
     /**
      * 🔹 Guardar incidente
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'codigo' => 'required|exists:bss_cinc,CODIGO',
-            'descripcion' => 'required|string',
-            'prioridad' => 'required|in:Alta,Media,Baja',
-            'tecnico_id' => 'required|exists:users,id',
-            'fecha_reporte' => 'required|date',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'codigo' => 'required|exists:bss_cinc,CODIGO',
+        'descripcion' => 'required|string',
+        'prioridad' => 'required|in:Alta,Media,Baja',
+        'tecnico_id' => 'required|exists:users,id',
+        'fecha_reporte' => 'required|date',
+    ]);
 
-        $tipoIncidente = BssCinc::where('CODIGO', $request->codigo)->first();
+    $tipoIncidente = BssCinc::where('CODIGO', $request->codigo)->first();
 
-        $incidente = new Incidente();
-        $incidente->usuario_id = auth()->id();
+    $incidente = new Incidente();
+    $incidente->usuario_id = auth()->id();
 
-        $ultimo = Incidente::orderBy('id', 'desc')->count();
-        $nuevoCodigo = 'INC-' . str_pad(($ultimo), 4, '0', STR_PAD_LEFT);
+    $ultimo = Incidente::orderBy('id', 'desc')->count();
+    $nuevoCodigo = 'INC-' . str_pad(($ultimo), 4, '0', STR_PAD_LEFT);
 
-        $incidente->codigo = $nuevoCodigo;
-        $incidente->titulo = $tipoIncidente->nombre_caso;
-        $incidente->descripcion = $request->descripcion;
-        $incidente->estado = $request->estado;
-        $incidente->prioridad = $request->prioridad;
-        $incidente->tecnico_id = $request->tecnico_id;
-        $incidente->fecha_reporte = $request->fecha_reporte;
-        $incidente->save();
+    $incidente->codigo = $nuevoCodigo;
+    $incidente->titulo = $tipoIncidente->nombre_caso;
+    $incidente->descripcion = $request->descripcion;
+    $incidente->estado = $request->estado;
+    $incidente->prioridad = $request->prioridad;
+    $incidente->tecnico_id = $request->tecnico_id;
+    $incidente->fecha_reporte = $request->fecha_reporte;
+    $incidente->save();
 
-        \Mail::to(auth()->user()->email)->send(new \App\Mail\IncidenteRegistradoMail($incidente));
+    // 📩 Enviar correo
+    \Mail::to(auth()->user()->email)->send(new \App\Mail\IncidenteRegistradoMail($incidente));
 
-        return redirect()->route('incidentes.index')->with('success', '✅ Incidente registrado correctamente.');
+    // 🔥🔥🔥 ENVIAR NOTIFICACIÓN FCM (ADICIONADO AQUÍ)
+    // try {
+    //     $firebase = app(\App\Services\FirebaseMessagingService::class);
+
+    //     // Obtener token del técnico asignado
+    //     $tecnico = User::find($request->tecnico_id);
+
+    //     if ($tecnico && $tecnico->device_token) {
+    //         $firebase->sendToToken(
+    //             $tecnico->device_token,
+    //             "Nuevo Incidente Asignado",
+    //             "Código: {$incidente->codigo} - {$incidente->titulo}",
+    //             [
+    //                 "incidente_id" => $incidente->id,
+    //                 "codigo" => $incidente->codigo,
+    //             ]
+    //         );
+    //     }
+    // } catch (\Exception $e) {
+    //     \Log::error("⚠️ Error al enviar FCM: " . $e->getMessage());
+    // 🔥🔥🔥 ENVIAR NOTIFICACIÓN FCM
+try {
+    $firebase = app(\App\Services\FirebaseMessagingService::class);
+
+    // Obtener el token más reciente del técnico
+    $userToken = \App\Models\UserToken::where('user_id', $request->tecnico_id)
+        ->orderByDesc('created_at')
+        ->first();
+
+    if ($userToken && $userToken->token) {
+        $firebase->sendToToken(
+            $userToken->token,
+            "Nuevo Incidente Asignado",
+            "Código: {$incidente->codigo} - {$incidente->titulo}",
+            [
+                "incidente_id" => $incidente->id,
+                "codigo" => $incidente->codigo,
+            ]
+        );
     }
+} catch (\Exception $e) {
+    \Log::error("⚠️ Error al enviar FCM: " . $e->getMessage());
+
+    }
+
+    return redirect()->route('incidentes.index')->with('success', '✅ Incidente registrado correctamente.');
+    
+}
+
 
     /**
      * 🔹 Editar incidente

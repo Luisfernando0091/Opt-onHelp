@@ -5,46 +5,50 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Incidente;
 use Illuminate\Http\Request;
+use App\Services\FirebaseService;
+use App\Models\UserToken;
+use App\Events\IncidenteCreado;
 
 class IncidenteApiController extends Controller
-{
-    // Listar todos los incidentes
+{ 
     public function index()
-    {
-        return response()->json(Incidente::all());
-    }
+{
+    return response()->json(Incidente::all());
+}
 
-    // Obtener información de un incidente
-    public function show($id)
-    {
-        $incidente = Incidente::find($id);
+   public function store(Request $request)
+{
+    $data = $request->validate([
+        'titulo'      => 'required|string|max:255',
+        'descripcion' => 'required|string',
+        'user_id'     => 'required|integer',
+    ]);
 
-        if (!$incidente) {
-            return response()->json(['error' => 'Incidente no encontrado'], 404);
-        }
+    $incidente = Incidente::create($data);
 
-        return response()->json($incidente);
-    }
+    event(new IncidenteCreado($incidente));
+    return response()->json([
+        'message'   => 'Incidente registrado y notificación enviada',
+        'incidente' => $incidente
+    ], 201);
+    // Obtener todos los tokens guardados
+   // $tokens = UserToken::pluck('token')->toArray();
 
-    // Actualizar solo solución y estado
-    public function updateSolucion(Request $request, $id)
-    {
-        $incidente = Incidente::find($id);
+    // $firebase = new FirebaseService();
 
-        if (!$incidente) {
-            return response()->json(['error' => 'Incidente no encontrado'], 404);
-        }
+    // foreach ($tokens as $token) {
+    //     $firebase->sendNotification(
+    //         $token,
+    //         'Nuevo Incidente',
+    //         $incidente->titulo,
+    //         ['incidente_id' => $incidente->id]
+    //     );
+    // }
 
-        $data = $request->validate([
-            'solucion' => 'required|string',
-            'estado'   => 'required|string',
-        ]);
+    // return response()->json([
+    //     'message'   => 'Incidente registrado y notificación enviada',
+    //     'incidente' => $incidente
+    // ], 201);
+}
 
-        $incidente->update($data);
-
-        return response()->json([
-            'message'   => 'Incidente actualizado correctamente',
-            'incidente' => $incidente
-        ]);
-    }
 }
