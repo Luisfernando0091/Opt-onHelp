@@ -18,28 +18,50 @@ class IncidenteController extends Controller
      */
     public function index(Request $request)
     {
+        // $user = auth()->user();
+
+        // if ($user->hasRole('admin')) {
+        //     $incidentes = Incidente::with(['usuario', 'tecnico'])
+        //         ->orderByDesc('id')
+        //         ->get();
+        // } elseif ($user->hasRole('tecnico')) {
+        //     $incidentes = Incidente::with(['usuario', 'tecnico'])
+        //         ->orderByDesc('id')
+        //         ->get();
+        // } else {
+        //     $incidentes = Incidente::with(['usuario', 'tecnico'])
+        //         ->where('usuario_id', $user->id)
+        //         ->orderByDesc('id')
+        //         ->get();
+        // }
+
+        // if ($request->ajax()) {
+        //     return view('incidentes.partials.lista', compact('incidentes'))->render();
+        // }
+
+        // return view('incidentes.index', compact('incidentes'));
         $user = auth()->user();
 
-        if ($user->hasRole('admin')) {
-            $incidentes = Incidente::with(['usuario', 'tecnico'])
-                ->orderByDesc('id')
-                ->get();
-        } elseif ($user->hasRole('tecnico')) {
-            $incidentes = Incidente::with(['usuario', 'tecnico'])
-                ->orderByDesc('id')
-                ->get();
-        } else {
-            $incidentes = Incidente::with(['usuario', 'tecnico'])
-                ->where('usuario_id', $user->id)
-                ->orderByDesc('id')
-                ->get();
-        }
+        // 1. Definir la consulta base
+        $query = Incidente::with(['usuario', 'tecnico'])
+            ->orderByDesc('id');
 
-        if ($request->ajax()) {
-            return view('incidentes.partials.lista', compact('incidentes'))->render();
+        // 2. Aplicar filtro por rol. Solo el rol 'usuario' filtra por su propio ID.
+        // 'admin' y 'tecnico' ven todos.
+        if ($user->hasRole('usuario')) {
+            $query->where('usuario_id', $user->id);
         }
+        
+        // 3. Ejecutar la consulta con paginación
+        // 🔥 CAMBIO CLAVE: Usamos paginate(15) en lugar de get()
+        $incidentes = $query->paginate(15);
+
+        // if ($request->ajax()) {
+        //     return view('incidentes.partials.lista', compact('incidentes'))->render();
+        // }
 
         return view('incidentes.index', compact('incidentes'));
+
     }
 
     /**
@@ -120,16 +142,25 @@ try {
     $userToken = \App\Models\UserToken::where('user_id', $request->tecnico_id)
         ->orderByDesc('created_at')
         ->first();
-
+        $reportante = auth()->user()->name; // <-- NOMBRE DEL USUARIO QUE REPORTA
+        $reportelasname = auth()->user()['LastName'];
+        $nombrecompleto = $reportante . ' ' . $reportelasname;
     if ($userToken && $userToken->token) {
         $firebase->sendToToken(
             $userToken->token,
             "Nuevo Incidente Asignado",
-            "Código: {$incidente->codigo} - {$incidente->titulo}",
-            [
+            "Código: {$incidente->codigo} - {$incidente->titulo} Reportado por: {$nombrecompleto}",
+            // "Reportado por: {$reportante}\nCódigo: {$incidente->codigo} - {$incidente->titulo}",
+
+            // "Código: {$incidente->codigo} - {$incidente->titulo}",
+            // [
+            //     "incidente_id" => $incidente->id,
+            //     "codigo" => $incidente->codigo,
+            //     ///jaaaaaaaaaaaaaaaa
+            // ]
+             [ "codigo" => $incidente->codigo,
                 "incidente_id" => $incidente->id,
-                "codigo" => $incidente->codigo,
-                ///jaaaaaaaaaaaaaaaa
+                "reportado_por" => $nombrecompleto, // <-- TAMBIÉN EN DATA
             ]
         );
     }

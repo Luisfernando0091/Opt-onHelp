@@ -26,9 +26,9 @@
             </div>
 
 
-              <p class="card-description">
+              {{-- <p class="card-description">
                 Incidentes registrados en el sistema
-              </p>
+              </p> --}}
 
               <div id="tabla-incidentes">
                 @include('incidentes.partials.lista', ['incidentes' => $incidentes])
