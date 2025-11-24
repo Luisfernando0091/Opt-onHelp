@@ -12,8 +12,10 @@ use App\Events\IncidenteCreado;
 class IncidenteApiController extends Controller
 { 
     public function index()
-{
-    return response()->json(Incidente::all());
+{  return response()->json(
+        Incidente::with(['usuario', 'tecnico'])->get()
+    );
+
 }
 
    public function store(Request $request)
@@ -50,5 +52,46 @@ class IncidenteApiController extends Controller
     //     'incidente' => $incidente
     // ], 201);
 }
+    public function updateSolucion(Request $request, $id) {
+         //VALIDAMOS DATOS 
+         $data  = $request-> validate([
+            'estado' => 'required|string',
+            'solucion' => 'nullable|string',
+         ]);
+
+         $incidente = Incidente::find( $id );
+
+         if(!$incidente){
+            return  response()->json(['error' => 'Incidente no encontrado'], 404);
+         }
+            //ACTUALIZAMOS DATOS
+            $incidente->estado=$data ['estado'];
+            $incidente->solucion=$data ['solucion'] ?? $incidente->solucion;
+
+            if($data['estado'] === 'Finalizado'){
+                $incidente->fecha_cierre = now();
+            } else{
+                $incidente ->fecha_cierre = null;
+            }
+
+
+            $incidente->save();
+
+            return response()->json([
+                
+                'message'=> 'Incidente actualizado correctamente',
+                'incidente'=> $incidente
+
+            ]);
+
+
+            }
+            public function show($id){
+                $incidente = Incidente ::with ('usuario','tecnico')->find($id);
+                if (!$incidente){
+                    return response()->json(['error' => 'Incidente no encontrado'],404);
+                }
+                return response()->json($incidente);
+            }
 
 }
