@@ -8,7 +8,8 @@ use App\Models\BssCreque; // ✅ tabla con los casos de requerimientos
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RequerimientoRegistradoMail;
 class RequerimientoController extends Controller
 {
     public function __construct()
@@ -76,39 +77,43 @@ public function index(Request $request)
      * 💾 Guardar nuevo requerimiento
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'codigo' => 'required|exists:bss_creque,CODIGO',
-            'descripcion' => 'required|string',
-            'prioridad' => 'required|in:Alta,Media,Baja',
-            'tecnico_id' => 'required|exists:users,id',
-            'fecha_reporte' => 'required|date',
-        ]);
+{
+    $request->validate([
+        'codigo' => 'required|exists:bss_creque,CODIGO',
+        'descripcion' => 'required|string',
+        'prioridad' => 'required|in:Alta,Media,Baja',
+        'tecnico_id' => 'required|exists:users,id',
+        'fecha_reporte' => 'required|date',
+    ]);
 
-        // Buscar tipo de requerimiento
-        $tipo = BssCreque::where('CODIGO', $request->codigo)->first();
+    // Buscar tipo de requerimiento
+    $tipo = BssCreque::where('CODIGO', $request->codigo)->first();
 
-        // Crear requerimiento
-        $requerimiento = new Requerimiento();
-        $requerimiento->usuario_id = Auth::id();
+    // Crear requerimiento
+    $requerimiento = new Requerimiento();
+    $requerimiento->usuario_id = Auth::id();
 
-        // Generar código único incremental
-        $ultimo = Requerimiento::orderBy('id', 'desc')->count();
-        $nuevoCodigo = 'REQ-' . str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
+    // Código incremental
+    $ultimo = Requerimiento::orderBy('id', 'desc')->count();
+    $nuevoCodigo = 'REQ-' . str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
 
-        $requerimiento->codigo = $nuevoCodigo;
-        $requerimiento->titulo = $tipo->nombre_caso;
-        $requerimiento->descripcion = $request->descripcion;
-        $requerimiento->estado = 'Pendiente';
-        $requerimiento->prioridad = $request->prioridad;
-        $requerimiento->tecnico_id = $request->tecnico_id;
-        $requerimiento->fecha_reporte = $request->fecha_reporte;
-        $requerimiento->save();
+    $requerimiento->codigo = $nuevoCodigo;
+    $requerimiento->titulo = $tipo->nombre_caso;
+    $requerimiento->descripcion = $request->descripcion;
+    $requerimiento->estado = 'Pendiente';
+    $requerimiento->prioridad = $request->prioridad;
+    $requerimiento->tecnico_id = $request->tecnico_id;
+    $requerimiento->fecha_reporte = $request->fecha_reporte;
+    $requerimiento->save();
 
-        return redirect()
-            ->route('requerimientos.index')
-            ->with('success', '✅ Requerimiento registrado correctamente.');
-    }
+    // 📨 ENVIAR CORREO AL USUARIO
+    Mail::to($requerimiento->usuario->email)
+        ->send(new RequerimientoRegistradoMail($requerimiento));
+
+    return redirect()
+        ->route('requerimientos.index')
+        ->with('success', '✅ Requerimiento registrado correctamente.');
+}
 
     /**
      * 👁️ Ver detalle
