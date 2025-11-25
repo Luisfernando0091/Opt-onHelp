@@ -5,52 +5,73 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Requerimiento;
 use Illuminate\Http\Request;
+use App\Events\Requerimientocreado;
 
 class RequerimientoApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
-        return response()->json(Requerimiento::all());
+        return response()->json(
+            Requerimiento::with(['usuario', 'tecnico', 'categoria'])->get()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'titulo'      => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'usuario_id'  => 'required|integer',
+        ]);
+
+        $requerimiento = Requerimiento::create($data);
+
+        event(new Requerimientocreado($requerimiento));
+
+        return response()->json([
+            'message'   => 'Requerimiento registrado y notificación enviada',
+            'incidente' => $requerimiento
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    public function updateSolucion(Request $request, $id)
+    {
+        $data = $request->validate([
+            'estado' => 'required|string',
+            'solucion' => 'nullable|string',
+        ]);
+
+        $incidente = Requerimiento::find($id);
+
+        if (!$incidente) {
+            return response()->json(['error' => 'Requerimiento no encontrado'], 404);
+        }
+
+        $incidente->estado   = $data['estado'];
+        $incidente->solucion = $data['solucion'] ?? $incidente->solucion;
+
+        if ($data['estado'] === 'Finalizado') {
+            $incidente->fecha_cierre = now();
+        } else {
+            $incidente->fecha_cierre = null;
+        }
+
+        $incidente->save();
+
+        return response()->json([
+            'message'   => 'Incidente actualizado correctamente',
+            'incidente' => $incidente
+        ]);
+    }
+
     public function show($id)
     {
-        $requerimiento = Requerimiento::find($id);
-        if(!$requerimiento)
-        {   
-            return response()->json(['error'=>'Requerimiento no encontrado'],404);
-        } 
-        return response()->json($requerimiento);
-   }
+        $incidente = Requerimiento::with(['usuario','tecnico','categoria'])->find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Requerimiento $requerimiento)
-    {
-        //
-    }
+        if (!$incidente) {
+            return response()->json(['error' => 'Requerimiento no encontrado'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Requerimiento $requerimiento)
-    {
-        //
+        return response()->json($incidente);
     }
 }

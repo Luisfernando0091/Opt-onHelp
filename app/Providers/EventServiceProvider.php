@@ -8,7 +8,10 @@ class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
         \App\Events\IncidenteCreado::class => [
-            \App\Listeners\EnviarNotificacionIncidente::class,
+            \App\Listeners\EnviarNotificacionIncidente::class,            
+        ],
+         \App\Events\Requerimientocreado::class => [
+            \App\Listeners\EnviarNotificacionRequerimiento::class,
         ],
     ];
 

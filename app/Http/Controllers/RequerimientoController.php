@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RequerimientoRegistradoMail;
+use Illuminate\Support\Facades\Log;
+
 class RequerimientoController extends Controller
 {
     public function __construct()
@@ -76,7 +78,48 @@ public function index(Request $request)
     /**
      * 💾 Guardar nuevo requerimiento
      */
-    public function store(Request $request)
+//     public function store(Request $request)
+// {
+//     $request->validate([
+//         'codigo' => 'required|exists:bss_creque,CODIGO',
+//         'descripcion' => 'required|string',
+//         'prioridad' => 'required|in:Alta,Media,Baja',
+//         'tecnico_id' => 'required|exists:users,id',
+//         'fecha_reporte' => 'required|date',
+//     ]);
+
+//     // Buscar tipo de requerimiento
+//     $tipo = BssCreque::where('CODIGO', $request->codigo)->first();
+
+//     // Crear requerimiento
+//     $requerimiento = new Requerimiento();
+//     $requerimiento->usuario_id = Auth::id();
+
+//     // Código incremental
+//     $ultimo = Requerimiento::orderBy('id', 'desc')->count();
+//     $nuevoCodigo = 'REQ-' . str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
+
+//     $requerimiento->codigo = $nuevoCodigo;
+//     $requerimiento->titulo = $tipo->nombre_caso;
+//     $requerimiento->descripcion = $request->descripcion;
+//     $requerimiento->estado = 'Pendiente';
+//     $requerimiento->prioridad = $request->prioridad;
+//     $requerimiento->tecnico_id = $request->tecnico_id;
+//     $requerimiento->fecha_reporte = $request->fecha_reporte;
+//     $requerimiento->save();
+
+//     // 📨 ENVIAR CORREO AL USUARIO
+//     Mail::to($requerimiento->usuario->email)
+//         ->send(new RequerimientoRegistradoMail($requerimiento));
+
+//     return redirect()
+//         ->route('requerimientos.index')
+//         ->with('success', '✅ Requerimiento registrado correctamente.');
+// }
+
+
+
+public function store(Request $request)
 {
     $request->validate([
         'codigo' => 'required|exists:bss_creque,CODIGO',
@@ -110,14 +153,44 @@ public function index(Request $request)
     Mail::to($requerimiento->usuario->email)
         ->send(new RequerimientoRegistradoMail($requerimiento));
 
+    // 🚀 **ENVIAR NOTIFICACIÓN PUSH AL TÉCNICO**
+    try {
+    $firebase = app(\App\Services\FirebaseMessagingService::class);
+
+    // Obtener token más reciente del técnico
+    $userToken = \App\Models\UserToken::where('user_id', $request->tecnico_id)
+        ->orderByDesc('created_at')
+        ->first();
+
+    $reportante = auth()->user()->name;
+    $lastname   = auth()->user()->LastName ?? '';
+    $nombreCompleto = $reportante . ' ' . $lastname;
+
+    if ($userToken && $userToken->token) {
+        $firebase->sendToToken(
+            $userToken->token,
+            "Nuevo Requerimiento Asignado",
+            "Código: {$requerimiento->codigo} - {$requerimiento->titulo} | Reportado por: {$nombreCompleto}",
+            [
+                "requerimiento_id" => $requerimiento->id,
+                "codigo" => $requerimiento->codigo,
+                "reportado_por" => $nombreCompleto
+            ]
+        );
+    } else {
+        \Log::warning("⚠️ No se encontró token FCM para el técnico ID {$request->tecnico_id}");
+    }
+
+} catch (\Throwable $e) {
+    \Log::error("🔥 Error al enviar notificación FCM: " . $e->getMessage());
+}
+
+
     return redirect()
         ->route('requerimientos.index')
         ->with('success', '✅ Requerimiento registrado correctamente.');
 }
 
-    /**
-     * 👁️ Ver detalle
-     */
     public function show($id)
     {
         $requerimiento = Requerimiento::with(['usuario', 'tecnico'])->findOrFail($id);
