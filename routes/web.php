@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\IncidenteController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\RequerimientoController;
+use App\Http\Controllers\ActivoController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -46,3 +47,31 @@ Route::resource('requerimientos', RequerimientoController::class);
 
 Route::put('/usuarios/{id}/cambiar-estado', [App\Http\Controllers\UserController::class, 'cambiarEstado'])
     ->name('usuarios.cambiarEstado');
+
+    // routes/web.php o api.php
+
+Route::post('/activo/{id}/asignar', [ActivoController::class, 'asignar']);
+// routes/web.php
+Route::get('/activos', [ActivoController::class, 'index']);
+Route::post('/activo/{id}/asignar', [ActivoController::class, 'asignar']);
+// Route::get('/activo/{id}/historial', [ActivoController::class, 'historial']);
+Route::get('/activos/create', [ActivoController::class, 'create'])->name('activos.create');
+Route::post('/activos', [ActivoController::class, 'store'])->name('activos.store');
+Route::resource('activos', ActivoController::class);
+Route::get('activos/{id}/historial', [ActivoController::class, 'historial'])->name('activos.historial');
+
+// Route::prefix('activos')->group(function () {
+
+//     Route::get('/', [ActivoController::class, 'index'])->name('activos.index');
+
+//     Route::get('/create', [ActivoController::class, 'create'])->name('activos.create');
+//     Route::post('/store', [ActivoController::class, 'store'])->name('activos.store');
+
+//     Route::post('/{id}/asignar', [ActivoController::class, 'asignar'])->name('activos.asignar');
+
+//     Route::get('/{id}/historial', [ActivoController::class, 'historial'])->name('activos.historial');
+// });
+
+// Route::post('/activo/{id}/mantenimiento', [ActivoController::class, 'mantenimiento'])
+//     ->name('activos.mantenimiento');
+// Route::get('/activo/{id}/historial', [ActivoController::class, 'historialAjax']);
