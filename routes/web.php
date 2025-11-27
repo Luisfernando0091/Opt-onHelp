@@ -7,7 +7,7 @@ use App\Http\Controllers\IncidenteController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\RequerimientoController;
 use App\Http\Controllers\ActivoController;
-
+use App\Http\Controllers\HistorialActivoController;
 Route::get('/', fn() => redirect()->route('login'));
 
 Auth::routes();
@@ -59,6 +59,17 @@ Route::get('/activos/create', [ActivoController::class, 'create'])->name('activo
 Route::post('/activos', [ActivoController::class, 'store'])->name('activos.store');
 Route::resource('activos', ActivoController::class);
 Route::get('activos/{id}/historial', [ActivoController::class, 'historial'])->name('activos.historial');
+    Route::get('activos/{id}/historial', [ActivoController::class, 'historial'])
+        ->name('activos.historial');
+        Route::get('/activos/{activo}/historial/create', [HistorialActivoController::class, 'create'])->name('historial.create');
+Route::post('/activos/{activo}/historial', [HistorialActivoController::class, 'store'])->name('historial.store');
+// Historial Mantenimiento
+Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
+    ->name('historial.create');
+
+Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store'])
+    ->name('historial.store');
+
 
 // Route::prefix('activos')->group(function () {
 

@@ -9,7 +9,7 @@ class Activo extends Model
     protected $fillable = [
         'nombre', 'tipo', 'marca', 'modelo', 'serial',
         'categoria', 'caracteristica', 'descripcion',
-        'estado', 'asignado_a'
+        'estado', 'asignado_a','ubicacion_id'
     ];
 
     // Relación con historial
@@ -23,5 +23,9 @@ class Activo extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'asignado_a');
+    }
+     public function ubicacion()
+    {
+        return $this->belongsTo(Ubicacion::class);
     }
 }
