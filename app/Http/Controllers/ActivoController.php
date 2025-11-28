@@ -8,7 +8,7 @@ use App\Models\HistorialActivo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Ubicacion;
-
+use  App\Models\CategoriaInventario;
 class ActivoController extends Controller
 {
     //
@@ -117,8 +117,9 @@ public function create()
 {
     $usuarios = User::all(); // si quieres asignar un usuario al activo
         $ubicaciones = Ubicacion::all();
+        $categorias_inventario = CategoriaInventario::all();
 
-    return view('Activos.create', compact('usuarios', 'ubicaciones'));
+    return view('Activos.create', compact('usuarios', 'ubicaciones','categorias_inventario'));
     
 }
 
@@ -137,6 +138,9 @@ public function store(Request $request)
         'estado' => 'required|in:Disponible,Asignado,Mantenimiento',
         'asignado_a' => 'nullable|exists:users,id',
         'ubicacion_id' => 'required|exists:ubicaciones,id',
+        'categoria' => 'required|exists:categoria_inventario,id',
+
+        //'categoria_id'  => 'request->categoria_id', 
 
     ]);
 

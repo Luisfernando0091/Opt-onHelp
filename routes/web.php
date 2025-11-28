@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\RequerimientoController;
 use App\Http\Controllers\ActivoController;
 use App\Http\Controllers\HistorialActivoController;
-Route::get('/', fn() => redirect()->route('login'));
+use App\Http\Controllers\CategoriaInventarioController;
+/*Route::get('/', fn() => redirect()->route('login'));
 
 Auth::routes();
 
@@ -71,6 +72,9 @@ Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store
     ->name('historial.store');
 
 
+
+Route::get('/inventario/crear', [CategoriaInventarioController::class, 'index']);
+*/
 // Route::prefix('activos')->group(function () {
 
 //     Route::get('/', [ActivoController::class, 'index'])->name('activos.index');
@@ -86,3 +90,92 @@ Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store
 // Route::post('/activo/{id}/mantenimiento', [ActivoController::class, 'mantenimiento'])
 //     ->name('activos.mantenimiento');
 // Route::get('/activo/{id}/historial', [ActivoController::class, 'historialAjax']);
+
+
+// ============================
+// REDIRECCIÓN AL LOGIN
+// ============================
+Route::get('/', fn() => redirect()->route('login'));
+
+Auth::routes();
+
+
+// ============================
+// USUARIOS (solo admin)
+// ============================
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('usuarios', UserController::class);
+});
+
+
+// ============================
+// HOME
+// ============================
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+// ============================
+// INCIDENTES
+// ============================
+Route::resource('incidentes', IncidenteController::class);
+
+Route::get('/incidentes/export/pdf', [IncidenteController::class, 'exportPdf'])
+    ->name('incidentes.export.pdf');
+
+Route::get('/incidentes/export/excel', [IncidenteController::class, 'exportExcel'])
+    ->name('incidentes.export.excel');
+
+Route::get('/reportes/incidentes', [IncidenteController::class, 'reporte'])
+    ->name('reportes.incidentes');
+
+
+// ============================
+// REQUERIMIENTOS
+// ============================
+Route::resource('requerimientos', RequerimientoController::class);
+
+
+// ============================
+// CAMBIAR ESTADO DE USUARIO
+// ============================
+Route::put('/usuarios/{id}/cambiar-estado', [UserController::class, 'cambiarEstado'])
+    ->name('usuarios.cambiarEstado');
+
+
+// ============================
+// ACTIVOS
+// ============================
+Route::resource('activos', ActivoController::class);
+
+// Asignar activo
+Route::post('/activos/{id}/asignar', [ActivoController::class, 'asignar'])
+    ->name('activos.asignar');
+
+// Ver historial del activo
+Route::get('/activos/{id}/historial', [ActivoController::class, 'historial'])
+    ->name('activos.historial');
+
+// Crear historial (mantenimiento, baja, reparación...)
+Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
+    ->name('activos.historial.create');
+
+// Guardar historial
+Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store'])
+    ->name('activos.historial.store');
+
+
+// ============================
+// CATEGORÍAS DE INVENTARIO
+// ============================
+Route::get('/inventario/crear', [CategoriaInventarioController::class, 'index'])
+    ->name('inventario.categorias');
+Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
+    ->name('historial.create');
+
+// Crear mantenimiento
+Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
+    ->name('historial.create');
+
+// Guardar mantenimiento
+Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store'])
+    ->name('historial.store');

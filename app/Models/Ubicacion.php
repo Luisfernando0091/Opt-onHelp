@@ -11,4 +11,9 @@ class Ubicacion extends Model
 
     protected $table = 'ubicaciones'; // por si el plural no es automático
     protected $fillable = ['nombre']; // campos permitidos para insert/update
+    public function activos()
+{
+    return $this->hasMany(Activo::class);
+}
+
 }

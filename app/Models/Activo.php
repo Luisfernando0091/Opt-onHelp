@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Activo extends Model
 {
     protected $fillable = [
-        'nombre', 'tipo', 'marca', 'modelo', 'serial',
+        'nombre', 'tipo', 'marca', 'modelo', 'serial', 'categoria',
         'categoria', 'caracteristica', 'descripcion',
-        'estado', 'asignado_a','ubicacion_id'
+        'estado', 'asignado_a','ubicacion_id',
     ];
 
     // Relación con historial
@@ -26,6 +26,7 @@ class Activo extends Model
     }
      public function ubicacion()
     {
-        return $this->belongsTo(Ubicacion::class);
+       // return $this->belongsTo(Ubicacion::class);
+          return $this->belongsTo(Ubicacion::class, 'ubicacion_id');
     }
 }

@@ -42,7 +42,9 @@
                 <td>{{ $activo->serial }}</td>
                 <td>{{ $activo->categoria }}</td>
                 <td>{{ $activo->estado }}</td>
-                <td>{{ $activo->usuario->name ?? '-' }}</td>
+                {{-- <td>{{ $activo->usuario->name ?? '-' }}</td> --}}
+                <td>{{ $activo->usuario ? $activo->usuario->name . ' ' . $activo->usuario->LastName : '-' }}</td>
+
                 <td>
 
                     <!-- Asignar -->
@@ -94,7 +96,10 @@
                         <label for="user_id" class="form-label">Usuario</label>
                         <select name="user_id" id="user_id" class="form-select">
                             @foreach($usuarios as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                           <option value="{{ $user->id }}">
+    {{ $user->name }} {{ $user->LastName }}
+</option>
+
                             @endforeach
                         </select>
                     </div>

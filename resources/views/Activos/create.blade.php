@@ -49,15 +49,14 @@
                 </div>
 
                 {{-- Categoría --}}
-              <div class="col-md-6 mb-3">
-  <label class="form-label">Categoría</label>
-  <select name="categoria" class="form-control">
-    <option value="">Seleccione una categoría</option>
-    <option value="Computadora">Computadora</option>
-    <option value="Anexos">Anexos</option>
-    <option value="Impresoras">Impresoras</option>
-  </select>
-</div>
+<select name="categoria" class="form-control" required>
+    <option value="">Seleccione categoría</option>
+    @foreach ($categorias_inventario as $cat)
+        <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
+    @endforeach
+</select>
+
+
 
 
                 {{-- Característica --}}
@@ -96,9 +95,12 @@
                   <label class="form-label">Asignado a</label>
                   <select name="asignado_a" class="form-select">
                     <option value="">-- Ninguno --</option>
-                    @foreach($usuarios as $usuario)
-                      <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                    @endforeach
+                   
+        @foreach($usuarios as $usuario)
+            <option value="{{ $usuario->id }}">
+                {{ $usuario->name }} {{ $usuario->LastName }}
+            </option>
+        @endforeach
                   </select>
                 </div>
 
