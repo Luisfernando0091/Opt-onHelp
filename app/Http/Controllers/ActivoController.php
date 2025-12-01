@@ -200,5 +200,33 @@ public function store(Request $request)
     $activo = Activo::with('historial.usuario')->findOrFail($id);
     return view('Activos.show', compact('activo'));
 }
+//FUNCIION PARA LA VISTA DE ACTIVOSWIES
+
+
+public function activosWies(Request $request)
+{
+    // Consulta base con relaciones
+    $query = Activo::with(['categoriaInventario', 'ubicacion', 'usuario']);
+
+    // Filtro por Categoría
+    if ($request->filled('categoria_id')) {
+        $query->where('categoria', $request->categoria_id);
+    }
+
+    // Filtro por Ubicación
+    if ($request->filled('ubicacion_id')) {
+        $query->where('ubicacion_id', $request->ubicacion_id);
+    }
+
+    $activos = $query->get();
+    $usuarios = User::all();
+
+    // Para llenar el select de filtros
+    $categorias = \App\Models\CategoriaInventario::all();
+    $ubicaciones = \App\Models\Ubicacion::all();
+
+    return view('Activos.activoswies', compact('activos', 'usuarios', 'categorias', 'ubicaciones'));
+}
+
 
 }

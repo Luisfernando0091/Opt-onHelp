@@ -214,6 +214,28 @@
             </div>
           </li>
 
+
+
+
+           <li class="nav-item">
+               
+
+            <a class="nav-link collapsed d-flex justify-content-between align-items-center"
+            
+               href="#menu-inventario" data-bs-toggle="collapse" aria-expanded="false">
+              <div><i class="mdi mdi-desktop-classic menu-icon"></i> Inventario</div>
+             <i class="mdi mdi-chevron-right toggle-icon"></i>
+
+            </a>
+    <div class="collapse" id="menu-inventario">
+              <ul class="nav flex-column sub-menu ps-4">
+        <li><a class="nav-link py-1" href="{{ route('activos.wies') }}">Lista de Activos</a></li>
+        <li><a class="nav-link py-1" href="{{ route('activos.index') }}">Registrar Activos</a></li>
+
+               
+              </ul>
+            </div>
+          </li>
           <!-- ===== PERFIL / CUENTA ===== -->
           <li class="nav-item mt-4">
             <a class="nav-link d-flex justify-content-between align-items-center"

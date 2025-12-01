@@ -40,7 +40,7 @@
                 <td>{{ $activo->tipo }}</td>
                 <td>{{ $activo->marca }}</td>
                 <td>{{ $activo->serial }}</td>
-                <td>{{ $activo->categoria }}</td>
+                <td>{{ $activo->categoriaInventario->nombre ?? '-' }}</td>
                 <td>{{ $activo->estado }}</td>
                 {{-- <td>{{ $activo->usuario->name ?? '-' }}</td> --}}
                 <td>{{ $activo->usuario ? $activo->usuario->name . ' ' . $activo->usuario->LastName : '-' }}</td>

@@ -29,4 +29,10 @@ class Activo extends Model
        // return $this->belongsTo(Ubicacion::class);
           return $this->belongsTo(Ubicacion::class, 'ubicacion_id');
     }
+public function categoriaInventario()
+{
+    return $this->belongsTo(CategoriaInventario::class, 'categoria', 'id');
+}
+
+
 }

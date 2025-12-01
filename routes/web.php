@@ -179,3 +179,7 @@ Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 
 // Guardar mantenimiento
 Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store'])
     ->name('historial.store');
+
+//Vista de activoswies
+
+Route::get('/activoswies', [ActivoController::class, 'activosWies'])->name('activos.wies');
