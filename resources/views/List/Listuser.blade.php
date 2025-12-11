@@ -12,7 +12,7 @@
 
             {{-- Encabezado con botón --}}
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h4 class="card-title mb-0">Lista de Usuarios</h4>
+              <h4 class="card-title mb-0">Lista de Usuarios CD</h4>
               <a href="{{ route('usuarios.create') }}" class="btn btn-primary btn-sm">
                 <i class="mdi mdi-account-plus"></i> Nuevo Usuario
               </a>
@@ -26,9 +26,10 @@
                   <tr>
                     <th>Foto</th>
                     <th>Nombre</th>
+                      <th>Apellido</th>
                     <th>Email</th>
-                    <th>Rol</th>
-                    <th>Teléfono</th>
+                    {{-- <th>Rol</th> --}}
+                    {{-- <th>Teléfono</th> --}}
                     <th>Estado</th>
                     <th>Fecha Registro</th>
                   </tr>
@@ -40,9 +41,10 @@
         <img src="{{ asset('img/B/face8.png') }}" alt="user" width="40" height="40" class="rounded-circle" />
     </td>
     <td>{{ $user->name }}</td>
+    <td>{{ $user->LastName}}</td>
     <td>{{ $user->email }}</td>
-    <td>{{ $user->roleData->name ?? 'Sin rol' }}</td>
-    <td>{{ $user->phone ?? '-' }}</td>
+    {{-- <td>{{ $user->roleData->name ?? 'Sin rol' }}</td> --}}
+    {{-- <td>{{ $user->phone ?? '-' }}</td> --}}
 
     <!-- 🌟 AQUÍ VA EL BOTÓN DE ESTADO 🌟 -->
     <td>
@@ -56,6 +58,9 @@
                 <button class="btn btn-sm btn-danger" type="submit">Inactivo</button>
             @endif
         </form>
+          <a href="{{ route('usuarios.edit', $user->id) }}" class="btn btn-primary btn-sm w-100">
+        Editar
+    </a>
     </td>
 
     <td>{{ $user->created_at->format('d M Y') }}</td>

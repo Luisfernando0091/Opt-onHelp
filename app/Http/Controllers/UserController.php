@@ -19,13 +19,13 @@ class UserController extends Controller
     /**
      * Mostrar listado de usuarios.
      */
-   public function index()
-{
-    // Cargamos la relación correcta (roleData)
-    $usuarios = \App\Models\User::with('roles')->get();
+    public function index()
+    {
+        // Cargamos la relación correcta (roleData)
+        $usuarios = \App\Models\User::with('roles')->get();
 
-    return view('list.Listuser', compact('usuarios'));
-}
+        return view('list.Listuser', compact('usuarios'));
+    }
 
 
     /**
@@ -69,7 +69,9 @@ class UserController extends Controller
     {
         $usuario = User::findOrFail($id);
         $roles = Role::all();
-        return view('usuarios.edit', compact('usuario', 'roles'));
+        // return view('usuarios.edit', compact('usuario', 'roles'));
+        return view('auth.edit', compact('usuario', 'roles'));
+
     }
 
     /**

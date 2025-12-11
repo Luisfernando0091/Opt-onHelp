@@ -15,6 +15,7 @@ class HistorialActivo extends Model
         'user_id',
         //'accion',
         'observacion',
+        'pieza_id'
     ];
 
     public function activo()
@@ -26,4 +27,8 @@ class HistorialActivo extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+        public function pieza()
+{
+    return $this->belongsTo(PiezasMantenimiento::class, 'pieza_id');
+}
 }

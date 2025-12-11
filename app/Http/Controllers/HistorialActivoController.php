@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Activo;
 use App\Models\HistorialActivo;
 use Illuminate\Http\Request;
+use App\Models\PiezasMantenimiento;
 
 class HistorialActivoController extends Controller
 {
     public function create($activoId)
     {
         $activo = Activo::findOrFail($activoId);
-        return view('Activos.historial.create', compact('activo'));
+        // Traer las piezas disponibles
+    $piezas = PiezasMantenimiento::orderBy('nombre')->get();
+
+        return view('Activos.historial.create', compact('activo','piezas'));
     }
 
     public function store(Request $request, $activoId)
@@ -24,7 +28,9 @@ class HistorialActivoController extends Controller
         'activo_id' => $activoId,
         'user_id' => auth()->id(), // Usuario logueado
         'accion' => 'Mantenimiento',
-        'observacion' => $request->observacion
+        'observacion' => $request->observacion,
+            'pieza_id' => $request->pieza_id, // 
+
         ]);
 
         return redirect()
@@ -32,4 +38,6 @@ class HistorialActivoController extends Controller
     ->with('success', 'Mantenimiento registrado correctamente!');
 
     }
+
+
 }

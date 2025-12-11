@@ -140,7 +140,11 @@ Route::resource('requerimientos', RequerimientoController::class);
 // ============================
 Route::put('/usuarios/{id}/cambiar-estado', [UserController::class, 'cambiarEstado'])
     ->name('usuarios.cambiarEstado');
-
+// ============================
+// Editar USUARIO
+// ============================
+Route::get('/usuarios/{id}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
+Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
 
 // ============================
 // ACTIVOS

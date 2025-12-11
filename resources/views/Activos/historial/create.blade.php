@@ -48,20 +48,24 @@
 
                             {{-- Selección de cambio de piezas --}}
                             <div class="mb-3">
-                                <label for="selectCambioPiezas" class="form-label">¿Se cambiaron piezas?</label>
-                                <select id="selectCambioPiezas" name="cambio_piezas" class="form-select" required>
-                                    <option value="no" selected>No</option>
-                                    <option value="si">Sí</option>
-                                </select>
-                            </div>
+    <label for="selectCambioPiezas" class="form-label">¿Se cambiaron piezas?</label>
+    <select id="selectCambioPiezas" name="cambio_piezas" class="form-select" required>
+        <option value="no" selected>No</option>
+        <option value="si">Sí</option>
+    </select>
+</div>
 
-                            {{-- Campo para piezas (se muestra si elige "sí") --}}
-                            <div class="mb-3 d-none" id="contenedor-piezas">
-                                <label>Piezas reemplazadas</label>
-                                <input type="text" name="piezas" class="form-control" placeholder="Ej: Disco duro, RAM">
-                            </div>
+{{-- Campo para piezas (se muestra si elige "sí") --}}
+<div class="mb-3 d-none" id="contenedor-piezas">
+    <label for="pieza_id" class="form-label">Pieza reemplazada</label>
+    <select name="pieza_id" id="pieza_id" class="form-select">
+        <option value="">Seleccione una pieza</option>
+        @foreach ($piezas as $pieza)
+            <option value="{{ $pieza->id }}">{{ $pieza->nombre }}</option>
+        @endforeach
+    </select>
+</div>
 
-                            <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-success">Guardar</button>
                             </div>
                         </form>

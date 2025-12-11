@@ -49,6 +49,7 @@
                                         <th>Marca</th>
                                         <th>Serial</th>
                                         <th>Estado</th>
+                                        <th>Cambio de piesas</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -62,6 +63,7 @@
                                         <td>{{ $h->activo->marca }}</td>
                                         <td>{{ $h->activo->serial }}</td>
                                         <td>{{ $h->activo->estado }}</td>
+                                        <td>{{ $h->pieza->nombre ?? '—' }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>

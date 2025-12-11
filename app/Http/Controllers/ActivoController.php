@@ -67,6 +67,8 @@ public function asignar(Request $request, $id)
     {
         $request->validate([
             'observacion' => 'required|string|max:2000',
+                    'pieza_id' => 'nullable|exists:pieza_mantenimiento,id', // si existe tabla
+
         ]);
 
         HistorialActivo::create([
@@ -74,6 +76,8 @@ public function asignar(Request $request, $id)
             'user_id' => auth()->id(),
             'accion' => 'Mantenimiento',
             'observacion' => $request->observacion,
+                    'pieza_id' => $request->pieza_id, // <-- AQUÍ TAMBIÉN
+
         ]);
 
         return back()->with('success', 'Mantenimiento registrado correctamente.');
