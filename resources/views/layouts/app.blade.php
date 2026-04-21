@@ -7,8 +7,16 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'OpcionHelp') }}</title>
+  
+{{-- <title>HOLA</title>{{ config('app.name', 'xd') }}</title> --}}
 
-  <!-- 🔹 Fuentes -->
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1F3BB3">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="OpcionHelp">
+  <!-- 🔹 Fuentes xxddxdxdx-->
   <link rel="dns-prefetch" href="//fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700" rel="stylesheet">
 
@@ -159,11 +167,18 @@
   </style>
 
   @stack('styles')
+  @yield('scripts')
+<!-- ✅ jQuery (OBLIGATORIO para Bootstrap 4) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- ✅ Bootstrap 4 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body>
   <div class="container-scroller">
-
+  
     <!-- 🔹 CONTENEDOR PRINCIPAL -->
     <div class="container-fluid page-body-wrapper">
 
@@ -202,7 +217,7 @@
 
           <li class="nav-item">
             <a class="nav-link collapsed d-flex justify-content-between align-items-center"
-               href="#menu-ticket" data-bs-toggle="collapse" aria-expanded="false">
+               href="#menu-ticket" data-toggle="collapse" aria-expanded="false">
               <div><i class="mdi mdi-lifebuoy menu-icon"></i> Generar Ticket</div>
               <i class="mdi mdi-chevron-right toggle-icon"></i>
             </a>
@@ -216,17 +231,18 @@
 
 
 
-
+  @role('admin|tecnico')
            <li class="nav-item">
                
 
             <a class="nav-link collapsed d-flex justify-content-between align-items-center"
             
-               href="#menu-inventario" data-bs-toggle="collapse" aria-expanded="false">
+               href="#menu-inventario" data-toggle="collapse" aria-expanded="false">
               <div><i class="mdi mdi-desktop-classic menu-icon"></i> Inventario</div>
              <i class="mdi mdi-chevron-right toggle-icon"></i>
 
             </a>
+            @endrole
     <div class="collapse" id="menu-inventario">
               <ul class="nav flex-column sub-menu ps-4">
         <li><a class="nav-link py-1" href="{{ route('activos.wies') }}">Lista de Activos</a></li>
@@ -239,7 +255,7 @@
           <!-- ===== PERFIL / CUENTA ===== -->
           <li class="nav-item mt-4">
             <a class="nav-link d-flex justify-content-between align-items-center"
-               href="#menu-perfil" data-bs-toggle="collapse" aria-expanded="false" role="button">
+               href="#menu-perfil" data-toggle="collapse" aria-expanded="false" role="button">
               <div class="d-flex align-items-center">
                 <i class="mdi mdi-account-circle menu-icon"></i>
                 <span>Cuenta</span>
@@ -247,7 +263,7 @@
               <i class="mdi mdi-chevron-right toggle-icon"></i>
             </a>
 
-            <div class="collapse" id="menu-perfil" data-bs-parent="#sidebar">
+            <div class="collapse" id="menu-perfil" data-parent="#sidebar">
               <div class="card bg-transparent border-0 p-3">
                 <div class="d-flex align-items-center mb-2">
                   {{-- <img src="{{ asset('img/B/face8.png') }}" alt="profile" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;"> --}}
@@ -297,5 +313,12 @@
   <script src="{{ asset('staradmin-2-free/src/assets/js/todolist.js') }}"></script>
 
   @stack('scripts')
+  <script>
+    $('#toggleSidebar').on('click', function () {
+      $('#sidebar').toggleClass('show');
+    });
+
+</script>
+
 </body>
 </html>

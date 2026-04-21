@@ -22,7 +22,10 @@ class UserController extends Controller
     public function index()
     {
         // Cargamos la relación correcta (roleData)
-        $usuarios = \App\Models\User::with('roles')->get();
+        $usuarios = \App\Models\User::with('roles')
+            ->orderBy('id', 'desc')
+            ->paginate(10);    
+      
 
         return view('list.Listuser', compact('usuarios'));
     }

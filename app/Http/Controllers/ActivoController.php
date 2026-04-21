@@ -17,19 +17,22 @@ class ActivoController extends Controller
 public function asignar(Request $request, $id)
 {
     $request->validate([
-        'user_id' => 'required|exists:users,id',
+        // 'user_id' => 'required|exists:users,id',
+        'asignado_a' => 'required|exists:users,id',
+
         'observacion' => 'nullable|string|max:1000',
+        
     ]);
 
     $activo = Activo::findOrFail($id);
-    $activo->asignado_a = $request->user_id;
+    $activo->asignado_a = $request->asignado_a;
     $activo->estado = 'Asignado';
     $activo->save();
     HistorialActivo::create([
         'activo_id' => $activo->id,
-        'user_id' => Auth::id() ?? $request->user_id,
+        'user_id' => Auth::id() ?? $request->asignado_a,
         'accion' => 'Asignado',
-        'observacion' => $request->observacion ?? 'Asignado al usuario ID ' . $request->user_id,
+        'observacion' => $request->observacion ?? 'Asignado al usuario ID ' . $request->asignado_a,
     ]);
 
 
@@ -136,7 +139,7 @@ public function store(Request $request)
         'marca' => 'nullable|string|max:255',
         'modelo' => 'nullable|string|max:255',
         'serial' => 'required|string|max:255',
-        'categoria' => 'nullable|string|max:255',
+        // 'categoria' => 'nullable|string|max:255',
         'caracteristica' => 'nullable|string|max:255',
         'descripcion' => 'nullable|string',
         'estado' => 'required|in:Disponible,Asignado,Mantenimiento',

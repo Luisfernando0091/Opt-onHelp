@@ -15,7 +15,7 @@
               <h4 class="fw-bold text-primary mb-0">
                 <i class="mdi mdi-chart-bar me-2"></i> Casos Registrados
               </h4>
-              <span class="badge bg-gradient-primary px-3 py-2 fs-6">Reporte General</span>
+              <span class="badge bg-gradient-primary px-3 py-2 fs-6">Indicadores</span>
             </div>
 
             {{-- Contadores (unificados: incidentes + requerimientos) --}}
@@ -105,7 +105,7 @@
         <div class="card shadow-sm border-0 rounded-4">
           <div class="card-body text-center">
             <h4 class="fw-bold text-dark mb-2">
-              <i class="mdi mdi-chart-donut-variant me-2 text-success"></i>Tickets por Tipo
+              <i class="mdi mdi-chart-donut-variant me-2 text-success"></i>Tipos de Tickets 
             </h4>
             <p class="text-muted mb-3">Incidentes vs Requerimientos</p>
 

@@ -49,15 +49,15 @@
                 </div>
 
                 {{-- Categoría --}}
-<select name="categoria" class="form-control" required>
-    <option value="">Seleccione categoría</option>
-    @foreach ($categorias_inventario as $cat)
-        <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
-    @endforeach
-</select>
-
-
-
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Categoria <span class="text-danger">*</span></label>
+        <select name="categoria" class="form-control" required>
+            <option value="">Seleccione categoría</option>
+            @foreach ($categorias_inventario as $cat)
+                <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
+            @endforeach
+        </select>
+        </div>
 
                 {{-- Característica --}}
                 <div class="col-md-12 mb-3">
@@ -72,7 +72,7 @@
                 </div>
 
                 {{-- Estado --}}
-                <div class="col-md-4 mb-3">
+                <div class="col-md-12 mb-3">
                   <label class="form-label">Estado</label>
                   <select name="estado" class="form-select">
                     <option value="Disponible" selected>Disponible</option>

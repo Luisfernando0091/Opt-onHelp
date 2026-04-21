@@ -14,6 +14,6 @@
 
     <p>Pronto nuestro equipo te dará una respuesta 😊.</p>
 
-    <p>Atentamente,<br>El equipo de soporte de TI</p>
+    <p>Atentamente,<br>Area de TI</p>
 </body>
 </html>

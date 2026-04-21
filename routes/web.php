@@ -51,10 +51,6 @@ Route::put('/usuarios/{id}/cambiar-estado', [App\Http\Controllers\UserController
 
     // routes/web.php o api.php
 
-Route::post('/activo/{id}/asignar', [ActivoController::class, 'asignar']);
-// routes/web.php
-Route::get('/activos', [ActivoController::class, 'index']);
-Route::post('/activo/{id}/asignar', [ActivoController::class, 'asignar']);
 // Route::get('/activo/{id}/historial', [ActivoController::class, 'historial']);
 Route::get('/activos/create', [ActivoController::class, 'create'])->name('activos.create');
 Route::post('/activos', [ActivoController::class, 'store'])->name('activos.store');
@@ -149,11 +145,15 @@ Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.
 // ============================
 // ACTIVOS
 // ============================
-Route::resource('activos', ActivoController::class);
-
-// Asignar activo
+Route::middleware(['auth','role:admin|tecnico'])->group(function () {
+    Route::resource('activos', ActivoController::class);
+    // Asignar activo
 Route::post('/activos/{id}/asignar', [ActivoController::class, 'asignar'])
     ->name('activos.asignar');
+});
+
+
+
 
 // Ver historial del activo
 Route::get('/activos/{id}/historial', [ActivoController::class, 'historial'])
@@ -173,8 +173,8 @@ Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store
 // ============================
 Route::get('/inventario/crear', [CategoriaInventarioController::class, 'index'])
     ->name('inventario.categorias');
-Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
-    ->name('historial.create');
+// Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
+//     ->name('historial.create');
 
 // Crear mantenimiento
 Route::get('/activos/{id}/historial/create', [HistorialActivoController::class, 'create'])
@@ -186,4 +186,10 @@ Route::post('/activos/{id}/historial', [HistorialActivoController::class, 'store
 
 //Vista de activoswies
 
-Route::get('/activoswies', [ActivoController::class, 'activosWies'])->name('activos.wies');
+// Route::get('/activoswies', [ActivoController::class, 'activosWies'])->name('activos.wies');
+Route::get('/activoswies', [ActivoController::class, 'activosWies'])
+  ->name('activos.wies')
+     ->middleware('role:admin|tecnico');
+Route::post('/activoswies', [ActivoController::class, 'store'])
+    ->name('activos.wies.store')
+    ->middleware('role:admin|tecnico');
